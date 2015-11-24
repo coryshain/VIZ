@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8">
+  <title>VIZ by Exploration @ OSU</title>
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link rel="apple-touch-icon" sizes="57x57" href="apple-touch-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="apple-touch-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="apple-touch-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="apple-touch-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="apple-touch-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="apple-touch-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="apple-touch-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="apple-touch-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon-180x180.png">
+  <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="android-chrome-192x192.png" sizes="192x192">
+  <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">
+  <link rel="manifest" href="manifest.json">
+  <link rel="mask-icon" href="safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="msapplication-TileImage" content="mstile-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script src="js/toggles.min.js"></script>
+  <script src="js/viz.js"></script>
+  
+  <link href='https://fonts.googleapis.com/css?family=Questrial' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/skeleton.css">
+  <link rel="stylesheet" type="text/css" href="css/toggles-full.css">
+  <link rel="stylesheet" type="text/css" href="css/viz.css">
+
+</head>
+<body>
+  
+  <div id="freezeViewport"></div>
+  
+  <div id="help">
+    <div class="helpPage">
+      Welcome to <span style="color: #FF6666; font-size: x-large; vertical-align: bottom; display: inline" class="text">VIZ<span style="font-size:small; text-transform: lowercase; color: #66CCFF; margin-left: -5px">beta</span></span>, Ohio State's online requirements visualizer.
+      <br><br><div class="progress"></div>
+    </div>
+    <div class="helpPage">
+      You can use <span style="color: #FF6666; font-size: x-large; vertical-align: bottom; display: inline" class="text">VIZ<span style="font-size:small; text-transform: lowercase; color: #66CCFF; margin-left: -5px">beta</span></span> to get a quick idea of how broadly your courses will apply across the majors at OSU.
+      <br><br><div class="progress"></div>
+    </div>
+    <div class="helpPage">
+      Search by selecting from the drop-down menus in the search pane.<br><br>
+      Hide/reveal the Search Pane by clicking "Collapse/Expand Search".
+      <br><br><div class="progress"></div>
+    </div>
+    <div class="helpPage">
+      <span style="color: #FF6666; font-size: x-large; vertical-align: bottom; display: inline" class="text">VIZ<span style="font-size:small; text-transform: lowercase; color: #66CCFF; margin-left: -5px">beta</span></span> will display your results:<br><br>
+      <span class="check">&#x2713;</span> means the item is <b>approved</b> according to your search.<br><span class="ballot">&#x2718;</span> means it is <b>not approved</b>.
+      <br><br><div class="progress"></div>
+    </div>
+    <div class="helpPage">
+      You can search either by <b>Courses</b> or <b>Programs</b>.<br><br>
+      The <b>Courses</b> search displays all majors that can accept <b>all</b> selected courses as fulfilling a requirement (other than Open Options or electives).<br><br>
+      The <b>Programs</b> search displays all courses that can fulfill requirements for <b>all</b> selected majors.
+      <br><br><div class="progress"></div>
+    </div>
+    <div class="helpPage">
+      To switch between searches, click the "Search By ..." button in the Search Pane.
+      <br><br><div class="progress"></div>
+    </div>
+    <div class="helpPage">
+      <span style="color: #FF6666; font-size: x-large; vertical-align: bottom; display: inline" class="text">VIZ<span style="font-size:small; text-transform: lowercase; color: #66CCFF; margin-left: -5px">beta</span></span> does not fully represent all requirements or replace in-person advising. Consult with an advisor before scheduling.<br><br>
+      <span style="text-size: xx-large"><b>I understand. Begin using </b><span style="color: #FF6666; font-size: x-large; vertical-align: bottom; display: inline" class="text">VIZ<span style="font-size:small; text-transform: lowercase; color: #66CCFF; margin-left: -5px">beta</span></span></span>.
+      <br><br><div class="progress"></div>
+    </div>
+  </div>
+  
+  <div class="container">
+    <div id="topBar">
+      <div id="menuToggle"><div id="menuButton"><span id="topLine"></span><span id="midLine"></span><span id="botLine"></span></div></div>
+      <div id="logos" class="super">
+        <span style="color: #FF6666; font-size: x-large; vertical-align: bottom" class="text">VIZ<span style="font-size:small; text-transform: lowercase; color: #66CCFF; margin-left: -5px">beta</span></span>
+        <span class="text"> by </span>
+        <a href="http://exploration.osu.edu/" target="_blank" class="text" style="color: #FF6666; font-size: x-large;"> EXP</a>
+        <span class="text"> @ </span>
+        <a href="https://www.osu.edu/" target="_blank" class="text" style="color: #FF6666; font-size: x-large;"> OSU</a>
+      </div>
+    </div>
+    <div id="optionsPane" class="collapsed">
+      <div id="reset" class="option super"><div class="reset text">Reset</div></div>
+      <div id="divide" class="option super"><div id="divideText" class="text"></div><div class="toggle-container"><div class="toggle toggle-light"></div></div></div>
+      <div id="tour" class="option super"><div class="text">Take Tour</div></div>
+    </div>
+    <div class="row">
+      <div id="searchColumn" class="one-third column">
+        <div id="searchContainer">
+          <div id="searchPane">
+            <div id="searchWrapperCourses" class="searchWrapper shown">
+              <h2 class="searchHeader"></h2>
+              <div class="searchList"></div>
+            </div>
+            <div id="searchWrapperPrograms" class="searchWrapper hidden">
+              <h2 class="searchHeader"></h2>
+              <div class="searchList"></div>
+              <div id="searchSelected"></div>
+            </div>
+            <div id="invertSearch">Search By Program</div>
+          </div>
+          <div id="paneToggler">&#9650; Collapse Search &#9650;</div>
+        </div>
+      </div>
+      <div id="displayColumn" class="two-thirds column">
+        <div id="displayContainer">
+          <div id="disclaimer">
+            <b>&#x26a0;</b> Results do not take into account your individual academic record and simplify many requirements. <b>Always</b> consult with an advisor before scheduling.
+          </div>
+          <div id="displayWrapperCourses" class="displayWrapper hidden">
+            <h2 class="displayHeader">Courses
+              <div class="collapser collapseAll">
+                <div class="verticalLine"></div>
+                <div class="horizontalLine"></div>
+              </div>
+            </h2>
+            <div class="displayDescr">Displaying courses which can fulfill requirements for all selected programs.</div>
+            <div class="displayList"></div>
+          </div>
+          <div id="displayWrapperPrograms" class="displayWrapper shown">
+            <h2 class="displayHeader">Programs
+              <div class="collapser collapseAll">
+                <div class="verticalLine"></div>
+                <div class="horizontalLine"></div>
+              </div>
+            </h2>
+            <div class="displayDescr">Displaying programs that accept all selected courses as degree requirements.</div>
+            <div class="displayList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div id="feedbackContainer">
+    <div id="feedbackTitle">Feedback?</div>
+    <div id="feedbackContentWrapper">
+      <div id="feedbackContent">Have feedback or questions?</div>
+      <a href="mailto:exploration@osu.edu" id="feedbackEmail">Email us.</a>
+    </div>
+  </div>
+
+</body>
+</html>
