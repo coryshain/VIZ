@@ -50,7 +50,7 @@
   // Load input DB from server
   function loadVIZ() {
     $.ajax({
-      url: 'vizDB.txt',
+      url: 'data/vizDB.txt',
       type: 'get',
       dataType: 'json',
       async: true,

@@ -21,7 +21,7 @@
 function loadVIZ() {
   var allData;
   $.ajax({
-    url: 'vizDB.txt',
+    url: 'data/vizDB.txt',
     type: 'get',
     dataType: 'json',
     async: true,
