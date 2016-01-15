@@ -820,25 +820,29 @@ function buildVIZ(allData) {
   $('link#favicon').attr('href', metaData['favicon']);
   
   // Define global event handlers
-  $('#paneToggler').click(toggleSearchPane);
+  $('div#paneToggler').click(toggleSearchPane);
   $('button#reset').click(resetAll);
   $('button#divide').click(groupItems);
-  $('#invertSearch').click(inverter);
+  $('div#invertSearch').click(inverter);
   $('h1.displayHeader').hover(function() {
     $(this).find('i.col1').css('color', shadeBlendConvert(0.3, metaData['col1']))
   }, function() {
     $(this).find('i.col1').css('color', metaData['col1'])
   });
   $('h1.displayHeader').click(toggleGroups);
-  $(feedbackTitle).click(function() {
-    if ($(feedbackContainer).hasClass('collapsed')) {
-      $(feedbackContainer).removeClass('collapsed');
-      $(feedbackContentWrapper).slideUp(200);
+  $('div#feedbackTitle').click(function() {
+    feedbackContainer = $('div#feedbackContainer');
+    feedbackContent = $('div#feedbackContentWrapper');
+    if (feedbackContainer.hasClass('collapsed')) {
+      console.log('expanding');
+      feedbackContainer.removeClass('collapsed');
+      feedbackContent.slideDown(200);
     } else {
-      $(feedbackContainer).addClass('collapsed');
-      $(feedbackContentWrapper).slideDown(200);
+      feedbackContainer.addClass('collapsed');
+      feedbackContent.slideUp(200);
     }
   });
+  $('a#feedbackEmail').attr('href', 'mailto:' + metaData['email']);
   $(window).on('resize', setSizes);
 
   // Build dynamic page content

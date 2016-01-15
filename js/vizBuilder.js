@@ -87,7 +87,8 @@
               theData['metaData']['logo'] &&
               theData['metaData']['bg'] &&
               theData['metaData']['help'] &&
-              theData['metaData']['favicon']) {
+              theData['metaData']['favicon'] &&
+              theData['metaData']['email']) {
               
             allData = theData;
             assignDataLabels();
@@ -120,16 +121,17 @@
       'catData': {},
       'colData': {},
       'metaData': {
-        'col1': '#CC0000',
-        'col2': '#555555',
+        'col1': '#00CCFF',
+        'col2': '#0099FF',
         'curKey': 0,
-        'website': 'http://www.osu.edu',
+        'website': 'https://github.com/coryshain/VIZ',
         'divide': true,
         'searchByCourse': true,
         'logo': '',
         'bg': [],
         'help': '',
         'favicon': '',
+        'email': '',
       }
     };
   }
@@ -325,6 +327,7 @@
     $('input#defSite').val(metaData['website']);
     $('input#helpURL').val(metaData['help']);
     $('input#favURL').val(metaData['favicon']);
+    $('input#email').val(metaData['email']);
     $('textarea#logoHTML').val(metaData['logo']);
     $('input#divide').prop('checked', metaData['divide']).click(function() {
       metaData['divide'] = $(this).prop('checked');
@@ -837,6 +840,7 @@
         metaData['col1'] = parent.find('input#primCol').val();
         metaData['col2'] = parent.find('input#secCol').val();
         metaData['favicon'] = $('input#favURL').val();          
+        metaData['email'] = $('input#email').val();          
         metaData['logo'] = parent.find('textarea#logoHTML').val();
         if (validSite(parent)) {
           metaData['website'] = parent.find('input#defSite').val();

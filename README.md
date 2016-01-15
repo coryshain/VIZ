@@ -27,7 +27,7 @@ on your web server.
   a. Skeleton (http://getskeleton.com/)
     i. Extract Skeleton-2.0.4 to your VIZ directory root
   b. FileSaver (https://github.com/eligrey/FileSaver.js/)
-    I. Copy FileSaver.min.js to the /js folder of your
+    i. Copy FileSaver.min.js to the /js folder of your
     VIZ directory
 3. Build your database using VIZ Builder
 
@@ -47,3 +47,7 @@ from VIZ Builder should always be correct if it is provided
 with a correctly-structured input database. For this reason,
 it is strongly encouraged to use VIZ Builder exclusively to make
 edits to the database, rather than manual editing.
+
+To see an example of VIZ in action with a fully-developed
+database, upload /example/vizDB.txt to VIZ Builder and click
+"Preview".
