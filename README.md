@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 VIZ is a web-based presentation format for searching
 course requirements by program and program requirements
 by course. It is written in HTML, CSS, and Javascript,
