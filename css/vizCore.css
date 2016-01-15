@@ -1,0 +1,24 @@
+/*
+***************************************************
+*
+* 1. Global styles
+*
+***************************************************
+*/
+
+body {
+  font-family: 'Questrial', sans-serif;
+  background-image: url('../images/bg/white_bg.jpg');
+  background-repeat: repeat;
+}
+
+h1, h2, h3, h4 {
+  color: #555555;
+  text-transform: lowercase;
+  font-variant: small-caps;
+}
+
+.block {
+  width: 100%;
+  display: block;
+}

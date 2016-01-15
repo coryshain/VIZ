@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <!-- Metadata -->
+  <meta charset="utf-8">
+  <title>VIZ Builder</title>
+  <meta name="description" content="A graphical user interface for manipulating data displayed by VIZ.">
+  <meta name="author" content="Cory Shain">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Favicon -->
+  <link id="favicon" rel="shortcut icon" href="vizBuilder.ico" />
+  
+  <!-- Stylesheets -->
+  <link href='https://fonts.googleapis.com/css?family=Questrial' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="Skeleton-2.0.4/css/normalize.css">
+  <link rel="stylesheet" href="Skeleton-2.0.4/css/skeleton.css">
+  <link rel="stylesheet" type="text/css" href="css/vizCore.css">
+  <link rel="stylesheet" type="text/css" href="css/vizBuilder.css">
+
+</head>
+<body>
+
+  <!-- Hidden elements, revealed as needed -->
+  
+  <!-- Loading screen -->
+  <div id="loading"><div id="loadingIcon"><i class="fa fa-circle-o-notch fa-spin"></i></div></div>
+  
+  <!-- Success screen -->
+  <div id="success"><div id="successIcon">&#x2713; </div> Update successful.</div>
+
+  <!-- Fullscreen BG div to exit popups -->
+  <div id="freezeViewport"></div>
+
+  <!-- Save alert -->
+  <div id="saveAlert">
+    <div id="saveAlertText">
+      For security reasons, saving and deleting in VIZ Builder does <b>not</b> affect the VIZ database on your website. To save your changes, download the new database from VIZ Builder and upload the file ("vizDB.txt") to the VIZ directory on your website.
+    </div>
+  </div>
+  
+  <!-- Download confirmation -->
+  <div id="downloadConf" class="popUp">
+    This will download a copy of "vizDB.txt" containing all of your current changes. To save these changes to your website, upload "vizDB.txt" to the VIZ directory on your web server.<br>
+    <button id="downloadYes">Download</button>
+  </div>
+  
+  <!-- Upload dialog -->
+  <div id="uploadDB" class="popUp">
+    Select a VIZ database file to upload, import the current VIZ databse from the server, or start from a blank database.
+    <input id="DBInput" type="file"></input><br>
+    <div id="uploadWarn1" class="warn">No file selected.</div>
+    <div id="uploadWarn2" class="warn">The selected file is not a valid VIZ database.</div>
+    <button id="confirmUpload"><i class="fa fa-upload"></i> Upload</button>
+    <button id="import"><i class="fa fa-files-o"></i> Import From Server</button>
+    <button id="startBlank"><i class="fa fa-file-o"></i> Start Blank Database</button>
+  </div>
+
+  <!-- Delete category alert (appears if category still has elements assigned) -->
+  <div id="deleteAlert" class="popUp">
+    <div id="deleteMessage"></div>
+    <div id="deleteList" class="list"></div>
+    <button id="closeDelAlert" class="close"><i class="fa fa-times"></i> Close</button>
+  </div>
+  
+  <!-- Course category manager -->
+  <div id="catManage" class="popUp">
+    <div id="catCreateContainer">
+      <button id="catCreateConf" class="edSave save"><i class="fa fa-floppy-o"></i> Add</button>
+      <span class="edInp"><input type="text" id="catCreate"></span>
+      <div id="catAddWarn1" class="warn">Name cannot be blank.</div>
+      <div id="catAddWarn2" class="warn">Category with that name already exists.</div>
+    </div>
+    <div id="catList" class="list">
+    </div>
+    <button id="catManClose" class="close"><i class="fa fa-times"></i> Close</button>
+  </div>
+  
+  <!-- Program school/college manager -->
+  <div id="colManage" class="popUp">
+    <div id="colCreateContainer">
+      <button id="colCreateConf" class="edSave save"><i class="fa fa-floppy-o"></i> Add</button>
+      <span class="edInp"><input type="text" id="colCreate"></span>
+      <div id="colAddWarn1" class="warn">Name cannot be blank.</div>
+      <div id="colAddWarn2" class="warn">College/School with that name already exists.</div>
+    </div>
+    <div id="colList" class="list">
+    </div>
+    <button id="colManClose" class="close"><i class="fa fa-times"></i> Close</button>
+  </div>
+  
+  <!-- Program school/college manager -->
+  <div id="bgManage" class="popUp">
+    <div id="bgCreateContainer">
+      <span id="bgManText" class="block"> Enter the URL of the background image you want to add. Images must be hosted in the same domain as VIZ.</span>
+      <button id="bgCreateConf" class="edSave save"><i class="fa fa-floppy-o"></i> Add</button>
+      <span class="edInp"><input type="text" id="bgCreate"></span>
+      <div id="bgAddWarn1" class="warn">URL cannot be blank.</div>
+    </div>
+    <div id="bgList" class="list">
+    </div>
+    <button id="bgManClose" class="close"><i class="fa fa-times"></i> Close</button>
+  </div>
+  
+  <!-- Item delete confirmation dialog -->
+  <div id="areUSure" class="popUp">Are you sure you want to delete the <span id="toDeleteType"></span> <span id="toDelete"></span>? All approval links will be lost. This cannot be undone.<br><button id="yesSure" class="save">Delete</button> <button id="noSure">Cancel</button></div>
+  
+  <!-- Course editor -->
+  <div id="courseEditor" class="editor popUp">
+    <h3 id="courseEdTitle">Placeholder</h3>
+    <div id="courseEdContainer">
+      <div class="editHeaders">
+        <label for="courseNameEd">Name: </label>
+        <button id="courseNameSave" class="nameSave edSave save"><i class="fa fa-floppy-o"></i> Update</button>
+        <span class="edInp"><input type="text" id="courseNameEd" class="nameInp"></input></span>
+        <div id="courseNameWarn1Ed" class="warn name1">Name cannot be blank.</div>
+        <div id="courseNameWarn2Ed" class="warn name2">Course with that name already exists.</div>
+        <label for="courseCatEd">Course Category: </label>
+        <button id="courseCatSave" class="catSave edSave save"><i class="fa fa-floppy-o"></i> Update</button>
+        <span class="edInp"><select type="text" id="courseCatEd" class="catInp"></select></span>
+        <div id="courseCatWarnEd" class="warn cat">Course Category cannot be blank.</div>
+        <button class="u-full-width" data-type="cat"><i class="fa fa-wrench"></i> Manage Categories</button>
+        <label for="courseSiteEd">Website: </label>
+        <button id="courseSiteSave" class="siteSave edSave save"><i class="fa fa-floppy-o"></i> Update</button>
+        <span class="edInp"><input type="text" id="courseSiteEd" class="siteInp"></input></span>
+        <label for="courseEditorList" class="list">Programs that accept <span id="courseEdLabel"></span>:</label>
+      </div>
+      <div id="courseEditorList" class="editorList"></div>
+    </div>
+    <button id="courseEditClose" type="button" class="close"><i class="fa fa-times"></i> Close</button>
+  </div>
+  
+  <!-- Program editor -->
+  <div id="progEditor" class="editor popUp">
+    <h3 id="progEdTitle">Placeholder</h3>
+    <div id="progEdContainer">
+      <div class="editHeaders">
+        <label for="progNameEd">Name: </label>
+        <button id="progNameSave" class="nameSave edSave save"><i class="fa fa-floppy-o"></i> Update</button>
+        <span class="edInp"><input type="text" id="progNameEd" class="nameInp"></input></span>
+        <div id="progNameWarn1Ed" class="warn name1">Name cannot be blank.</div>
+        <div id="progNameWarn2Ed" class="warn name2">Program with that name already exists.</div>
+        <label for="progCatEd">College/School: </label>
+        <button id="progCatSave" class="catSave edSave save"><i class="fa fa-floppy-o"></i> Update</button>
+        <span class="edInp"><select type="text" id="progCatEd" class="catInp"></select></span>
+        <div id="progCatWarnEd" class="warn cat">College/school cannot be blank.</div>
+        <button class="u-full-width" data-type="col"><i class="fa fa-wrench"></i> Manage Colleges/Schools</button>
+        <label for="progSiteEd">Website: </label>
+        <button id="progSiteSave" class="siteSave edSave save"><i class="fa fa-floppy-o"></i> Update</button>
+        <span class="edInp"><input type="text" id="progSiteEd" class="siteInp"></span>
+        <label for="progEditorList">Courses that are accepted by <span id="progEdLabel"></span>:</label>
+      </div>
+      <div id="progEditorList" class="editorList"></div>
+    </div>
+    <button id="progEditClose" type="button" class="close"><i class="fa fa-times"></i> Close</button>
+  </div>
+  
+  
+  
+  
+  
+
+  <!-- Always visible elements -->
+  
+  <!-- Top menu bar -->
+  <div id="topBar">
+    <div id="topBarInner">
+      <span style="color: #000; font-size: x-large; vertical-align: middle; display: inline; margin-right: 10px;" class="text">VIZ<span style="font-size:small; text-transform: lowercase; color: #66CCFF; margin-left: -5px">beta</span>Builder</span>
+      <button id="uploadNew"><i class="fa fa-file-o"></i> New Database</button>
+      <button id="view"><i class="fa fa-eye"></i> View Database</button>
+      <button id="download"><i class="fa fa-download"></i> Download Database</button>
+      <button id="preview"><i class="fa fa-laptop"></i> Preview</button>
+    </div>
+    <div id="menuToggle"><i class="fa fa-bars"></i></div>
+  </div>
+  <!-- Menu spaces (resized/shown/hidden as needed to preserve content flow) -->
+  <div id="topBarBuffer"></div>
+  <div id="menuToggleBuffer"></div>
+  
+  <!-- Main page container -->
+  <div class="container">
+
+    <!-- "Add" pane row -->
+    <div id="items" class="row">
+  
+      <!-- Course add pane -->
+      <div id="courseAdd" class="one-half column">
+        <h1 class="center">Add a Course</h1>
+        <label for="courseName">Name: </label>
+        <input type="text" id="courseName" class="nameInp u-full-width"><br>
+        <div id="courseNameWarn1" class="warn name1">Name cannot be blank.</div>
+        <div id="courseNameWarn2" class="warn name2">Course with that name already exists.</div>
+        <label for="courseCat">Course Category: </label>
+        <select type="text" id="courseCat" class="catInp u-full-width"></select><br>
+        <div id="courseCatWarn" class="warn cat">Course Category cannot be blank.</div>
+        <button class="u-full-width" data-type="cat"><i class="fa fa-wrench"></i> Manage Categories</button>
+        <label for="courseSite">Website: </label>
+        <input type="text" id="courseSite" class="siteInp u-full-width"><br>
+        <button id="courseSave" type="button" class="u-full-width save"><i class="fa fa-floppy-o"></i> Add</button><br><br>
+      </div>
+      
+      <!-- Program add pane -->
+      <div id="progAdd" class="one-half column">
+        <h1 class="center">Add a Program</h1>
+        <label for="progName">Name: </label>
+        <input type="text" id="progName" class="nameInp u-full-width"><br>
+        <div id="progNameWarn1" class="warn name1">Name cannot be blank.</div>
+        <div id="progNameWarn2" class="warn name2">Program with that name already exists.</div>
+        <label for="progCat">College/School: </label>
+        <select type="text" id="progCat" class="catInp u-full-width"></select><br>
+        <div id="progCatWarn" class="warn cat">College/school cannot be blank.</div>
+        <button class="u-full-width" data-type="col"><i class="fa fa-wrench"></i> Manage Colleges/Schools</button>
+        <label for="progSite">Website: </label>
+        <input type="text" id="progSite" class="siteInp u-full-width"><br>
+        <button id="progSave" type="button" class="u-full-width save"><i class="fa fa-floppy-o"></i> Add</button><br><br>
+      </div>
+      
+      <button class="u-full-width" id="switch2props"><i class="fa fa-cogs"></i> Edit VIZ Properties</button>
+    
+      <hr>
+    </div>
+        
+    <!-- Metadata editor pane -->
+    <div id="props" class="row">
+      <h1 class="center">Edit VIZ Properties</h1>
+      <div class="row" id="propEdit">
+        <div id="propEdit1" class="one-half column">
+          <label for="primCol">Primary Color: </label>
+          <input type="text" id="primCol" class="primCol u-full-width"><br>
+          <div id="primColWarn1" class="warn pcol1">Primary color cannot be blank.</div>
+          <div id="primColWarn2" class="warn pcol2">Color code must begin with '#'.</div>
+          <div id="primColWarn3" class="warn pcol3">Color color code must be 3 or 6 characters long.</div>
+          <label for="secCol">Secondary Color: </label>
+          <input type="text" id="secCol" class="secCol u-full-width"><br>
+          <div id="secColWarn1" class="warn scol1">Secondary color cannot be blank.</div>
+          <div id="secColWarn2" class="warn scol2">Color code must begin with '#'.</div>
+          <div id="secColWarn3" class="warn scol3">Color color code must be 3 or 6 characters long.</div>
+          <label for="defSite">Default Webpage for Links: </label>
+          <input type="text" id="defSite" class="defSite u-full-width"><br>
+          <div id="siteWarn1" class="warn scol1">Default webpage cannot be blank.</div>
+          <label for="helpURL">Help page URL: </label>
+          <input type="text" id="helpURL" class="helpURL u-full-width" input="#"><br>
+          <label for="favURL">Favicon URL: </label>
+          <input type="text" id="favURL" class="favURL u-full-width" input="#"><br>
+        </div>
+        <div id="propEdit2" class="one-half column">
+          <label for="logoHTML">Logo HTML: </label>
+          <textarea id="logoHTML" class="u-full-width"></textarea>
+          <button class="u-full-width" data-type="bg"><i class="fa fa-wrench"></i> Manage Background Images</button>
+          <input type="checkbox" id="divide"> Display groups by default</input><br>
+          <input type="checkbox" id="searchByCourse"> Search by courses by default</input><br>
+        </div>
+      </div>
+      <button id="propSave" type="button" class="u-full-width save"><i class="fa fa-floppy-o"></i> Update</button><br><br>
+      <button class="u-full-width" id="switch2items"><i class="fa fa-list"></i> Add Courses and Programs</button>
+      <hr>
+    </div>
+
+    <!-- Course and progam lists (editor dialogs accessible from here for existing items) -->
+    <div class="row">
+      <div class="one-half column">
+        <h2 id="courseListHeader" class="center">Course List <span class="collapser"><i class="fa fa-minus minus"></i><i class="fa fa-plus plus"></i></span></h2>
+        <div id="courseList"></div>
+      </div>
+      <div class="one-half column">
+        <h2 id="progListHeader" class="center">Program List <span class="collapser"><i class="fa fa-minus minus"></i><i class="fa fa-plus plus"></i></span></h2>
+        <div id="progList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script src="js/FileSaver.min.js"></script>
+  <script src="js/vizCore.js"></script>
+  <script src="js/vizBuilder.js"></script>
+  
+</body>

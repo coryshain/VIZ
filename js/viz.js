@@ -1,823 +1,868 @@
-//Global parameters
-var dataURL = "http://exploration.osu.edu/Requirements%20Visualizer/majors.txt";
-var srcData;
-var	courseData = {};
-var categoryData = {};
-var collegeData = {};
-var majorData = {};
-var headings = [];
-var categories = [];
-var displayItemsEnabled = [[], []];
-var divide = true;
-var searchByCourse = true;
-var shownSearch;
-var shownDisplay;
-var hiddenSearch;
-var hiddenDisplay;
-var helpPages;
-var currentHelpPage = -1
+///////////////////////////////////////
+//
+// VIZ component code
+//
+///////////////////////////////////////
 
+(function() {
 
-
-
-
-//Utilities (sorted alphabetically)
-
-function advanceTour() {
-  if (currentHelpPage < helpPages.length - 1) {
-    currentPage = $(helpPages[currentHelpPage]);
-    currentPage.fadeOut(300);
-    currentHelpPage++;
-    currentPage = $(helpPages[currentHelpPage]);
-    currentPage.fadeIn(300);
+  // Allows DB to be inherited from calling method.
+  // Required for preview feature of VIZ Builder.
+  if (typeof allData !== 'undefined') {
+    buildVIZ(allData);
   } else {
-    $(helpPages[currentHelpPage]).fadeOut(300);
-    $('#help').fadeOut(300);
-    currentHelpPage = -1;
+    loadVIZ();
   }
-}
+  
+}());
 
-function attachDisplayItems(parentWrapper, itemData) {
-  var parentWrapper = $(parentWrapper);
-  if (divide) {
-    parentWrapper.find('.displayItem').each(function(){
-      $('div#' + name2ID(itemData[ID2Name($(this).attr('id'))][0])).find('.displayCategoryContainer').append($(this));
-    });
-    parentWrapper.find('.displayCategory').each(function(){
-        $(this).slideDown(300);
-    });
-  } else {
-    var itemArray = []
-    parentWrapper.find('.displayCategory').each(function(){
-      $(this).slideUp(300, function() {
-      });
-    });
-    parentWrapper.find('.displayItem').each(function(){
-      itemArray.push($(this));
-    });
-    itemArray.sort(divsort);
-    for (var i = 0; i < itemArray.length; i++) {
-      parentWrapper.find('.displayList').append(itemArray[i]);
+
+// Load DB from server and build VIZ UI
+function loadVIZ() {
+  var allData;
+  $.ajax({
+    url: 'vizDB.txt',
+    type: 'get',
+    dataType: 'json',
+    async: true,
+    success: function(db) {
+      buildVIZ(db);
     }
-  }
-}
-
-function buildAll() {
-  var divideText = $('#divideText');
-  if (searchByCourse) {
-    divideText.text('Colleges');
-  } else {
-    divideText.text('Categories');
-  }
-  if (!shownSearch.hasClass('built')) {
-    buildSearch();
-  }
-  if (!shownDisplay.hasClass('built')) {
-    buildDisplay();
-  }
-
-  shownSearch.slideDown(300);
-  shownDisplay.slideDown(300);
-}
-
-function buildCollapser(parent) {
-  parent = $(parent);
-  var collapser = document.createElement('DIV');
-  var vertical = document.createElement('DIV');
-  var horizontal = document.createElement('DIV');
-
-  $(collapser).addClass('collapser');
-  $(vertical).addClass('verticalLine');
-  $(horizontal).addClass('horizontalLine');
-  
-  parent.append(collapser);
-  collapser.appendChild(vertical);
-  collapser.appendChild(horizontal);
-}
-
-function buildDisplay() {
-  var shownItemData;
-  var hiddenItemData;
-  var groupData;
-  var sortOrder;
-      
-  if (searchByCourse) {
-    shownItemData = majorData;
-    hiddenItemData = courseData;
-    groupData = collegeData;
-    sortOrder = sortCollege;
-  } else {
-    shownItemData = courseData;
-    hiddenItemData = majorData;
-    groupData = categoryData;
-  }
-  
-  if (shownDisplay.hasClass('built')) {
-    attachDisplayItems(shownDisplay, shownItemData);
-  } else {
-    buildDisplayList(shownItemData, groupData, sortOrder);
-    shownDisplay.addClass('built');
-  }
-
-  if (hiddenDisplay.hasClass('built')) {
-    attachDisplayItems(hiddenDisplay, hiddenItemData);
-  }
-}
-
-function buildDisplayGroup(group, groupList, itemData) {
-  var newGroup = document.createElement('DIV');
-  var newGroupContainer = document.createElement('DIV');
-  var content = document.createTextNode(group + '  ');
-  var title = document.createElement('H3');
-  
-  newGroup.id = name2ID(group);
-  $(newGroup).addClass('displayCategory');
-  $(newGroupContainer).addClass('displayCategoryContainer');
-  $(title).addClass('displayCategoryTitle');
-  
-  shownDisplay.find('.displayList').append(newGroup);
-  newGroup.appendChild(title);
-  title.appendChild(content);
-  buildCollapser(title);
-  newGroup.appendChild(newGroupContainer);
-  
-  if (shownDisplay.hasClass('collapsed')) {
-    $(newGroup).find('.displayCategoryContainer').css('display', 'none');
-    $(newGroup).find('.verticalLine').css('display', 'block');
-    $(newGroup).find('.displayCategoryTitle').addClass('collapsed');
-  }
-  
-  $( title ).click(function() {
-    toggleGroup($(this));
   });
-    
-  if (divide) {
-    for (var j = 0; j < groupList.length; j++) {
-      var el = groupList[j];
-      buildDisplayItem(el, $(newGroup).find('div.displayCategoryContainer'), itemData[el][1]);             
-    }
-  } else {
-    $(newGroup).css('display', 'none');
-  }
 }
 
-function buildDisplayItem(el, parent, href) {
-  var newItem = document.createElement('A');
-  var content = document.createTextNode(el);
-  var checkText = document.createTextNode('\u2713 ');
-  var check = document.createElement('SPAN');
-  var ballot = document.createElement('SPAN');
-  var ballotText = document.createTextNode('\u2718 ');
+// Build VIZ UI
+function buildVIZ(allData) {
 
-  newItem.href = href;
-  newItem.target = "_blank";
-  $(check).addClass('check');
-  $(check).addClass('hide');
-  $(ballot).addClass('ballot');
-  newItem.id = name2ID(content.nodeValue);
-  $(newItem).addClass('displayItem');
+  ///////////////////////////////////////
+  //
+  // Global variables
+  //
+  ///////////////////////////////////////
 
-  parent.append(newItem);
-  newItem.appendChild(check);
-  check.appendChild(checkText);
-  newItem.appendChild(ballot);
-  ballot.appendChild(ballotText);
-  newItem.appendChild(content);
-}
+  // Shortcut to VIZ course data
+  var courseData = allData['courseData'];
 
+  // Shortcut to VIZ program data
+  var progData = allData['progData'];
 
-function buildDisplayList(itemData, groupData, sortOrder) {
-  var displayList = shownDisplay.find('.displayList');
-  var groupsSorted;
-  if (sortOrder) {
-    groupsSorted = Object.keys(groupData).sort(sortOrder);
-  } else {
-    groupsSorted = Object.keys(groupData);
-  }
-  for (var i = 0; i < groupsSorted.length; i++) {
-    var group = groupsSorted[i];
-    if (!(group === 'Meta-Major')) {
-      buildDisplayGroup(group, groupData[group], itemData);
-    }
-  }
-  if (!divide) {
-    $('.collapseAll').css('display', 'none');
-    var itemsSorted = Object.keys(itemData).sort();
-    for (var i = 0; i < itemsSorted.length; i++) {
-      var el = itemsSorted[i];
-      if (!(el === 'College') && !(el === 'Major') && !(el === 'Website') && !(itemData[el][0] === 'Meta-Major')) {
-        buildDisplayItem(el, displayList, itemData[el][1]);
-      }
-    }
-  }
-}
-
-function buildSearch() {
-  if (searchByCourse) {
-    shownSearch.find('.searchHeader').text('Courses');
-    buildSearchList(courseData, categoryData);
-  } else {
-    shownSearch.find('.searchHeader').text('Programs');
-    buildSearchList(majorData);
-    shownSearch.find('select')
-      .attr('multiple', 'multiple')
-  }
-  shownSearch.addClass('built');
-}
-
-function buildSearchList(itemData, groupData) {
-  if (groupData) {
-    for (var group in groupData) {
-      buildSearchListGroup(group, groupData[group].sort());
-    }
-  } else {
-    buildSearchListGroup('Choose', Object.keys(itemData).sort());
-  }
-}
-
-function buildSearchListGroup(group, groupList) {
-  var newGroup = document.createElement('DIV');
-  var newGroupTitle = document.createElement('LABEL');
-  var newGroupTitleText = document.createTextNode(group + ": ");
-  var newGroupSelect = document.createElement('SELECT');
-  var blank = document.createElement('OPTION');
-  var blankText = document.createTextNode('');
-
-  $(newGroup).addClass('u-full-width');
-  $(newGroupTitle).addClass('searchCategory title');
-  newGroupTitle.htmlFor = name2ID(group);
-  $(newGroupSelect).addClass('u-full-width ' + name2ID(group));
-  blank.value = '';
-  $(blank).addClass('blank');
-  blank.title = '';
+  // Shortcut to VIZ course category data
+  var catData = allData['catData'];
   
-  shownSearch.find('.searchList').append(newGroup);
-  newGroup.appendChild(newGroupTitle);
-  newGroupTitle.appendChild(newGroupTitleText);
-  newGroup.appendChild(newGroupSelect);
-  newGroupSelect.appendChild(blank);
-  blank.appendChild(blankText);
-  
-  $(newGroupSelect).change(updateDisplay);
-  
-  for (var i = 0; i < groupList.length; i++) {
-    //Build multi-select element
-    var itemName = groupList[i];
-    var newItem = document.createElement('OPTION');
-    var content = document.createTextNode(itemName);
+  // Shortcut to VIZ program college/school data
+  var colData = allData['colData'];
 
-    newItem.value = itemName;
-    newItem.title = itemName;
-    $(newItem).addClass('course ' +  name2ID(itemName));
+  // Shortcut to VIZ metadata
+  var metaData = allData['metaData'];
+  
+  // Group display items by category (boolean)
+  // Initial value inherited from DB parameter
+  var divide = metaData['divide'];
 
-    newItem.appendChild(content);
-    newGroupSelect.appendChild(newItem);
-    
-    //Build list of selected elements to display in search by Program
-    var searchSelected = $('div#searchSelected');
+  // Search by courses (boolean)
+  // Initial value inherited from DB parameter
+  var searchByCourse = metaData['searchByCourse'];
+
+  
+
+  
+  
+  ///////////////////////////////////////
+  //
+  // UI initialization
+  //
+  ///////////////////////////////////////
+
+  // Build all DB-contingent UI elements
+  function buildAll() {
+    var type = 'course';
+    var oppType = 'prog';
+    $('div#divideText').text('Colleges');
     if (!searchByCourse) {
-      var newSelected = document.createElement('DIV');
-      var searchLink = document.createElement('A');
-      var selectedText = document.createTextNode(itemName);
-      var ex = document.createElement('DIV');
-      var exTextDiv = document.createElement('DIV');
-      
-      $(newSelected).addClass('searchSelItem');
-      $(searchLink).addClass('searchLink');
-      searchLink.href = majorData[itemName][1];
-      searchLink.target = "_blank";
-      $(ex).addClass('searchEx');
-      $(exTextDiv).addClass('exTextDiv');
-      
-      searchSelected.append(newSelected);
-      newSelected.appendChild(searchLink);
-      searchLink.appendChild(selectedText);
-      newSelected.appendChild(ex);
-      ex.appendChild(exTextDiv);
-      
-      $(ex).click(function() {
-        var toDelete = $(this).parent().text();
-        removeSelected(toDelete);
-      });
+      type = 'prog';
+      oppType = 'course';
+      $('div#divideText').text('Categories');
     }
-  }
-}
-
-function divsort(A, B) {
-    return A.attr('id').localeCompare(B.attr('id'));
-}
-
-function enableDisplayItems() {
-  var displayItems;
-  if (searchByCourse) {
-    displayItems = displayItemsEnabled[0];
-  } else {
-    displayItems = displayItemsEnabled[1];
-  }
-	for (var i = 0; i < displayItems.length; i++) {
-    var displayItemDiv = $('a#' + name2ID(displayItems[i]));
-		displayItemDiv.addClass("active");
-    displayItemDiv.find('.ballot').addClass('hide');
-    displayItemDiv.find('.check').removeClass('hide');
-	}
-}
-
-function getData() {
-  for (var i = 2; i < srcData.length; i++) {
-		if (!(srcData[i] === '')) {
-			line = srcData[i].split('\t');
-			majorData[line[0]] = [line[2], line[1], []]
-			var courseList = majorData[line[0]][2];
-			for (var j = 0; j < Object.keys(courseData).length; j++) {
-				if (!(line[j] === '0')) {
-					//Get the data for major names and websites
-					if (j < 2) {
-						courseData[headings[j]][2].push(line[j]);
-					} else if (j === 2) {
-						courseData[headings[j]][2].push(line[j]);
-						if (collegeData[line[j]]) {
-							collegeData[line[j]].push(line[0]);
-						} else {
-							collegeData[line[j]] = [line[0]];
-						}
-					}
-					//Populate a list of majors which accept each course
-					else {
-						courseList.push(headings[j]);
-						courseData[headings[j]][2].push(line[0]);
-					}
-				}
-			}
-		}
-	}
-}
-
-function getHeadings() {
-	for (var i = 0; i < headings.length; i++) {
-		courseData[headings[i]] = [categories[i], 'https://courses.osu.edu/psp/csosuct/EMPLOYEE/PUB/c/COMMUNITY_ACCESS.OSR_CAT_SRCH.GBL', []];
-		if (i > 2) {
-			if (categoryData[categories[i]]) {
-				categoryData[categories[i]].push(headings[i]);
-			} else {
-				categoryData[categories[i]] = [headings[i]];
-			}
-		}
-	}
-}
-
-function groupItems() {
-  if (divide) {
-    shownDisplay.find('.collapseAll').fadeOut(300, 'swing');
-    hiddenDisplay.find('.collapseAll').fadeOut(300, 'swing');
-    divide = false;
-  } else {
-    shownDisplay.find('.collapseAll').fadeIn(300, 'swing');
-    hiddenDisplay.find('.collapseAll').fadeIn(300, 'swing');
-    divide = true;
-  }
-	buildDisplay();
-}
-
-function ID2Name(string) {
-		return string.replace(/_|LLB|RRB|AND|COMMA|APOST|SLASH|PLUS|DOT/g, function replacer(x) {
-		switch (x) {
-			case "_" :
-				return " ";
-				break;
-			case "LLB" :
-				return "(";
-				break;
-			case "RRB" :
-				return ")";
-				break;
-			case "AND":
-				return "&";
-				break;
-			case "COMMA":
-				return ",";
-				break;
-			case "APOST":
-				return "'";
-				break;
-			case "SLASH":
-				return "/";
-				break;
-			case "PLUS":
-				return "+";
-				break;
-			case "DOT":
-				return ".";
-				break;
-			default:
-				return x;
-		}
-	});
-}
-
-function intersect(A,B){
-	var result = new Array();
-	for (i = 0; i < A.length; i++) {
-		for (j = 0; j < B.length; j++) {
-			if (A[i] === B[j] && $.inArray(A[i], result) == -1) {
-				result.push(A[i]);
-				break;
-			}
-		}
-	}
-	return result;
-}
-
-function inverter() {
-  var invertSearch = $('#invertSearch');
-  var invertText;
-  var searchPane = $('#searchPane');
-
-  if (searchByCourse) {
-    searchByCourse = false;
-    invertText = 'Search By Course';
-  } else {
-    searchByCourse = true;
-    invertText = 'Search By Program';
-  }
-  shownDisplay.slideUp(300, function() {
-  });
-  shownSearch.slideUp(300, function() {
-    showHidePanes();
-    buildAll();
-    invertSearch.text(invertText);
-  });
-}
-
-function name2ID(string) {
-	return string.replace(/ |\(|\)|&|,|\'|\/|\+|\./g, function replacer(x) {
-		switch (x) {
-			case " " :
-				return "_";
-				break;
-			case "(" :
-				return "LLB";
-				break;
-			case ")" :
-				return "RRB";
-				break;
-			case "&":
-				return "AND";
-				break;
-			case ",":
-				return "COMMA";
-				break;
-			case "'":
-				return "APOST";
-				break;
-			case "/":
-				return "SLASH";
-				break;
-			case "+":
-				return "PLUS";
-				break;
-			case ".":
-				return "DOT";
-				break;
-			default:
-				return x;
-		}
-	});
-}
-
-function removeSelected(value) {
-  $('select.Choose').find('option.' + name2ID(value)).prop('selected', false);
-  updateDisplay();
-}
-
-function resetDisplay(displayItems) {
-  for (var i = 0; i < displayItems.length; i++) {
-    var displayItemDiv = $('a#' + name2ID(displayItems[i]));
-    if (displayItemDiv.hasClass('active')) {
-      displayItemDiv.removeClass('active');
-      displayItemDiv.find('.ballot').removeClass('hide');
-      displayItemDiv.find('.check').addClass('hide');
-    }
-  }
-}	
-
-function resetSearch() {
-	$('select').val('');
-  $('div#searchSelected').text('');
-}
-
-function resetter() {
-	resetSearch();
-  for (var i = 0; i < displayItemsEnabled.length; i++) {
-    resetDisplay(displayItemsEnabled[i]);
-  }
-  if (shownDisplay.hasClass('collapsed')) {
-    toggleGroups();
-  }
-}
-
-function setSizes() {
-  var displayColumn = $('#displayColumn');
-  var searchColumn = $('#searchColumn');
-  var topBar = $('#topBar');
-  var optionsPane = $('#optionsPane');
-  var paneToggler = $('#paneToggler');
-  var disclaimer = $('#disclaimer');
-  
-  if (optionsPane.hasClass('collapsed')) {
-    optionsPane.css('left', 0 - optionsPane.outerWidth());
-  } else {
-    optionsPane.css('left', 0);
-  }
-  
-  if ($(window).width() < 850) {
-    searchColumn.removeClass('one-third').addClass('one-half');
-    displayColumn.removeClass('two-thirds').addClass('one-half');
-  } else {
-    searchColumn.addClass('one-third').removeClass('one-half');
-    displayColumn.addClass('two-thirds').removeClass('one-half');
-  }
-  
-	displayColumn.css('margin-top', topBar.outerHeight());
-	searchColumn.css('margin-top', topBar.outerHeight());
-  $('#searchContainer').width($('#searchColumn').width());
-	$('#reset').css('margin-top', topBar.height() + 10);
-  $('#menuToggle').height(topBar.height()).width(topBar.height());
-	$('#logos').css('margin-left', $('#menuToggle').outerWidth() + 10);
-  paneToggler.css('bottom', 0 - paneToggler.height());
-  disclaimer.css('top', topBar.outerHeight() + 10).width($('div#displayContainer').width() - 20);
-  displayColumn.css('padding-top', disclaimer.outerHeight() + 10);
-  
-  var searchHeight = window.innerHeight - topBar.outerHeight() - $('#invertSearch').outerHeight() - paneToggler.outerHeight() - 20;
-  shownSearch.css('max-height', searchHeight);
-  hiddenSearch.css('max-height', searchHeight);
-}
-
-function showHidePanes() {
-  if (searchByCourse) {
-    shownSearch = $('#searchWrapperCourses');
-    shownDisplay = $('#displayWrapperPrograms');
-    hiddenSearch = $('#searchWrapperPrograms');
-    hiddenDisplay = $('#displayWrapperCourses');
-  } else {
-    shownSearch = $('#searchWrapperPrograms');
-    shownDisplay = $('#displayWrapperCourses');
-    hiddenSearch = $('#searchWrapperCourses');
-    hiddenDisplay = $('#displayWrapperPrograms');
-  }
-}
-
-function sortCollege(A,B) {
-	return stripStartingFiller(A).localeCompare(stripStartingFiller(B));
-}
-
-function stripQuotes(string) {
-	return string.replace(/\"/g, "");
-}
-
-function stripStartingFiller(collegeName) {
-	if (collegeName.match(/^The .*/)) {
-		return stripStartingFiller(collegeName.slice(4));
-	}
-	if (collegeName.match(/^College .*/)) {
-		return stripStartingFiller(collegeName.slice(8));
-	}
-	if (collegeName.match(/^of .*/)) {
-		return stripStartingFiller(collegeName.slice(3));
-	}
-	if (collegeName.match(/^School .*/)) {
-		return stripStartingFiller(collegeName.slice(7));
-	}
-	return collegeName;
-}
-
-function toggleGroup(element) {
-  var el = $(element);
-	if (el.hasClass('collapsed')) {
-    el.find('.verticalLine').fadeOut(300, 'swing');
-		el.next().slideDown(300, 'swing');
-    el.removeClass('collapsed');
-	} else {
-    el.find('.verticalLine').fadeIn(300, 'swing');
-		el.next().slideUp(300, 'swing');
-    el.addClass('collapsed');
-	}
-}
-
-function toggleGroups() {
-  if (divide) {
-    if (shownDisplay.hasClass('collapsed')) {
-      shownDisplay.find('h3').each(function() {
-        if ($(this).hasClass('collapsed')) {
-          toggleGroup($(this));
-        }
-      });
-      hiddenDisplay.find('h3').each(function() {
-        if ($(this).hasClass('collapsed')) {
-          toggleGroup($(this));
-        }
-      });
-      $('.collapseAll').find('.verticalLine').fadeOut(300, 'swing');
-      shownDisplay.removeClass('collapsed');
-      hiddenDisplay.removeClass('collapsed');
+    var showHideText = $('div#showHideText');
+    if (divide) {
+      showHideText.text('Hide');
     } else {
-      shownDisplay.find('h3').each(function() {
-        if (!$(this).hasClass('collapsed')) {
-          toggleGroup($(this));
-        }
-      });
-      hiddenDisplay.find('h3').each(function() {
-        if (!$(this).hasClass('collapsed')) {
-          toggleGroup($(this));
-        }
-      });
-      $('.collapseAll').find('.verticalLine').fadeIn(300, 'swing');
-      shownDisplay.addClass('collapsed');
-      hiddenDisplay.addClass('collapsed');
+      showHideText.text('Show');
     }
-  }
-}
+    buildSearch('course', searchByCourse);
+    buildDisplay('prog', searchByCourse);
+    buildSearch('prog', !searchByCourse);
+    buildDisplay('course', !searchByCourse);
+    $('div#menuToggle').click(toggleMenu);
 
-function toggleSearchPane() {
-  var paneToggler = $('#paneToggler');
-  var searchPane = $('#searchPane');
-  if (paneToggler.hasClass('collapsed')) {
-    searchPane.slideDown(300, 'swing');
-    paneToggler
-      .removeClass('collapsed')
-      .text('\u25b2 Collapse Search \u25b2');
-  } else {
-    searchPane.slideUp(300, 'swing');
-    paneToggler
-      .addClass('collapsed')
-      .text('\u25bc Expand Search \u25bc');
+    $('div#' + type + 'SearchWrapper')
+          .css('display', 'block')
+          .addClass('shown');
+    $('div#' + oppType + 'DisplayWrapper')
+          .css('display', 'block')
+          .addClass('shown');
   }
-}
-
-function toggleSettingsPane() {
-  var settingsPane = $('#optionsPane');
-  var width = settingsPane.width();
-  var freezeViewport = $('#freezeViewport');
-  var menuToggle = $('#menuToggle');
   
-  if (settingsPane.hasClass('collapsed')) {
-    settingsPane.animate({
-      left: "+=" + width,
-      easing: 'swing'
-    }, 300);
-    settingsPane.removeClass('collapsed');
-    freezeViewport.fadeIn(300);
-    menuToggle.css('background-color', '#000');
-  } else {
-    settingsPane.animate({
-      left: '-=' + width,
-      easing: 'swing'
-    }, 300);
-    settingsPane.addClass('collapsed');
-    freezeViewport.fadeOut(300);
-    menuToggle.css('background-color', 'transparent');
+  // Process colors
+  function processColors() {
+    var col1 = metaData['col1'];
+    var col2 = metaData['col2'];
+    $('.col1').css('color', col1);
+    $('.col1-dark').css('color', shadeBlendConvert(-0.5,col1));
+    $('.col1-light').css('color', shadeBlendConvert(0.5,col1));
+    $('.col2').css('color', col2);
+    $('.col2-dark').css('color', shadeBlendConvert(-0.5,col2));
+    $('.col2-light').css('color', shadeBlendConvert(0.5,col2));
+    $('.bg-col1').css('background-color', col1);
+    $('.bg-col1-dark').css('background-color', shadeBlendConvert(-0.5,col1));
+    $('.bg-col1-light').css('background-color', shadeBlendConvert(0.5,col1));
+    $('.bg-col2').css('background-color', col2);
+    $('.bg-col2-dark').css('background-color', shadeBlendConvert(-0.5,col2));
+    $('.bg-col2-light').css('background-color', shadeBlendConvert(0.5,col2));
   }
-}
-
-function updateDisplay() {
-  searchItemsSelected = [];
-  if (searchByCourse) {
-    shownSearch.find('select').each(function() {
-      if (!($(this).val() === '')) {
-        searchItemsSelected.push($(this).val());
-      }
-    });
-    updateDisplayItems(searchItemsSelected, courseData);
-  } else {
-    if (shownSearch.find('select.Choose').val()) {
-      searchItemsSelected = shownSearch.find('select.Choose').val().slice();
+  
+  
+  
+  
+  
+  ///////////////////////////////////////
+  //
+  // Display pane initialization
+  //
+  ///////////////////////////////////////
+  
+  // Build entire display pane
+  function buildDisplay(type, show) {
+    var sortOrder;
+    if (type === 'prog') {
+      sortOrder = compareCol;
     }
-    $('div.searchSelItem').each(function() {
-      if ($.inArray($(this).text(), searchItemsSelected) == -1) {
-        if (!($(this).css('display') === 'none')) {
-          $(this).slideUp(300);
+    buildDisplayList(type, sortOrder);
+  }
+  
+  // Build display list (child of display pane)
+  function buildDisplayList(type, sortOrder) {
+    var elData = courseData;
+    var groupData = catData;
+    if (type === 'prog') {
+      elData = progData;
+      groupData = colData;
+    }
+    var displayList = $('div#'+ type + 'DisplayWrapper').find('.displayList');
+    var groupsSorted = Object.keys(groupData).slice();
+    if (sortOrder) {
+      groupsSorted.sort(sortOrder);
+    }
+    for (var i = 0; i < groupsSorted.length; i++) {
+      var groupKey = groupsSorted[i];
+      buildDisplayListGroup(groupKey, type);
+    }
+    if (!divide) {
+      sortItem = compareCourse;
+      if (type === 'prog') {
+        sortItem = compareProg;
+      }
+      $('.collapseAll').css('display', 'none');
+      var itemsSorted = Object.keys(elData).slice().sort(sortItem);
+      var website = elData[itemsSorted[i]]['site'];
+      if (website.length === 0) {
+        website = metaData['website'];
+      }
+      for (var i = 0; i < itemsSorted.length; i++) {
+        buildDisplayItem(itemsSorted[i], type, displayList,
+              website);
+      }
+    }
+  }
+  
+  // Create display group (child of display list)
+  function buildDisplayListGroup(groupKey, type) {
+    var elData = courseData;
+    var groupData = catData;
+    if (type === 'prog') {
+      elData = progData;
+      groupData = colData;
+    }
+    var display = $('div#' + type + 'DisplayWrapper');
+    
+    // Prevent orphaning of collapser by grouping it with last word
+    var nameVector = groupData[groupKey]['name'].split(' ');
+    var newGroup = $('<div class="displayCategory" data-key="' + groupKey + '">'
+          + '<h2 class="displayCategoryTitle">' + nameVector.slice(0, -1).join(' ')
+          + ' </h2><div class="displayCategoryContainer"></div></div>');
+    var collapserGroup = $('<div class="collapserGroup">' + nameVector.slice(-1) + '</div>');
+    newGroup.find('h2.displayCategoryTitle').append(collapserGroup);
+    buildCollapser(collapserGroup);
+    
+    display.find('.displayList').append(newGroup);
+    
+    if (divide) {    
+      var container = newGroup.find('div.displayCategoryContainer');
+    
+      for (var i = 0; i < groupData[groupKey]['list'].length; i++) {
+        var website = elData[groupData[groupKey]['list'][i]]['site'];
+        if (website.length === 0) {
+          website = metaData['website'];
         }
-      } else {
-        if ($(this).css('display') === 'none')  {
+        buildDisplayItem(groupData[groupKey]['list'][i], type,
+              container, website);             
+      }
+    } else {
+      newGroup.css('display', 'none');
+    }
+  }
+
+  // Create display item (child of display group)
+  function buildDisplayItem(elKey, type, parent, href) {
+    var elData = courseData;
+    if (type === 'prog') {
+      elData = progData;
+    }
+    var newItem = $('<a class="displayItem" href="' + href + '" target="_blank" data-key="'
+          + elKey + '">' + '<i class="fa fa-check check hide"></i>'
+          + '<i class="fa fa-times ballot"></i> '
+          + elData[elKey]['name'] + '</a>');
+          
+    parent.append(newItem);
+  }
+
+  // Create collapser element and assign event handlers
+  function buildCollapser(parent) {
+    var parent = $(parent);
+    var collapser = $('<div class="collapser"><i class="fa fa-plus col1 plus"></i>'
+          + '<i class="fa fa-minus col1 minus"></i></div>');
+    parent.append(collapser);
+    parent.parent().hover(function() {
+      $(this).find('i.col1').css('color', shadeBlendConvert(0.3, metaData['col1']))
+    }, function() {
+      $(this).find('i.col1').css('color', metaData['col1'])
+    }).click(function() {
+      toggleGroup($(this));
+    });
+  }
+  
+  // Attach display item divs to their containers
+  function attachDisplayItems(type, elData) {
+    var display = $('div#' + type + 'DisplayWrapper');
+    var sort = compareCourse;
+    if (type === 'prog') {
+      sort = compareProg;
+    }
+    if (divide) {
+      display.find('.displayItem').each(function(){
+        $('div[data-key="' + elData[parseInt($(this).attr('data-key'))]['cat']
+              + '"]').find('.displayCategoryContainer').append($(this));
+      });
+      display.find('.displayCategory').each(function(){
           $(this).slideDown(300);
+      });
+    } else {
+      var itemArray = []
+      display.find('.displayCategory').each(function(){
+        $(this).slideUp(300);
+      });
+      display.find('.displayItem').each(function(){
+        itemArray.push(parseInt($(this).attr('data-key')));
+      });
+      itemArray.sort(sort);
+      var displayList = display.find('.displayList');
+      for (var i = 0; i < itemArray.length; i++) {
+        displayList.append($('a[data-key="'
+              + itemArray[i] + '"]'));
+      }
+    }
+  }
+  
+  
+
+
+
+  ///////////////////////////////////////
+  //
+  // Search pane initialization
+  //
+  ///////////////////////////////////////
+
+  // Build entire search pane
+  function buildSearch(type, show) {
+    var typeName = 'Courses';
+    if (type === 'prog') {
+      typeName = 'Programs';
+    }
+    var search = $('div#' + type + 'SearchWrapper');
+    search.find('.searchHeader').text(typeName);
+    buildSearchList(type);
+  }
+
+  // Build search list (child of search pane)
+  function buildSearchList(type) {
+    var elData = courseData;
+    var groupData = catData;
+    if (type === 'prog') {
+      buildSearchListGroup(-1, type);
+    } else {
+      groupData = catData;
+      for (var groupKey in groupData) {
+        buildSearchListGroup(groupKey, type);
+      }
+    }
+  }
+
+  // Create search list group (child of search list)
+  function buildSearchListGroup(groupKey, type) {
+    var elData = courseData;
+    var groupData = catData;
+    var groupList;
+    var groupName;
+    if (type === 'prog') {
+      elData = progData;
+      groupData = colData;
+      groupList = Object.keys(elData).sort(compareProg);
+      groupName = 'Choose';
+    } else {
+      groupList = groupData[groupKey]['list'].slice().sort(compareCourse);
+      groupName = groupData[groupKey]['name'];
+    }
+
+    var search = $('div#' + type + 'SearchWrapper');
+    var newGroup = $('<div><label class="searchCategory title" for="'
+          + groupName + ' data-key="' + groupKey + '"">' + groupName + ': </label></div>');
+    $('div#' + type + 'SearchWrapper').find('div.searchList').append(newGroup);
+          
+    var newSelect = $('<select class="u-full-width"><option class="blank"></option></select>');
+    newGroup.append(newSelect);
+    newSelect.change(updateDisplay);
+    if (type === 'prog') {
+        newSelect.attr('multiple', 'multiple').addClass('Choose');
+    }
+    
+    for (var i = 0; i < groupList.length; i++) {
+      //Build multi-select element
+      var itemName = elData[groupList[i]]['name'];
+      var newItem = $('<option value="' + groupList[i] + '">' + itemName + '</option>');
+      newSelect.append(newItem);
+      
+      //Build list of selected elements to display in search by Program
+      if (type === 'prog') {
+        var searchSelected = $('div#searchSelected');
+        var website = progData[groupList[i]]['site'];
+        if (website === '') {
+          website = metaData['website'];
+        }
+        var newSelected = $('<div class="searchSelItem" data-key="' + groupList[i] 
+              + '"><a href="' + website
+              + '" target="_blank" class="searchLink">' + progData[groupList[i]]['name']
+              + '</a></div>');
+        var ex = $('<div class="searchEx"><div class="exTextDiv col1"><i class="fa fa-times"></i></div></div>');
+        searchSelected.append(newSelected);
+        newSelected.append(ex);
+  
+        ex.click({key: groupList[i]}, function(event) {
+          var key = event.data.key;
+          removeSelected(key);
+        });
+      }
+    }
+  }
+
+  
+  
+  
+  
+  ///////////////////////////////////////
+  //
+  // VIZ core search functionality
+  //
+  ///////////////////////////////////////
+  
+  // Intersect results from search terms and update display
+  function updateDisplay() {
+    searchItemsSelected = [];
+    if (searchByCourse) {
+      $('div#courseSearchWrapper').find('select').each(function() {
+        if (!($(this).val() === '')) {
+          searchItemsSelected.push(parseInt($(this).val()));
+        }
+      });
+      updateDisplayItems(searchItemsSelected, courseData);
+    } else {
+      var search = $('div#progSearchWrapper');
+      if (search.find('select.Choose').val()) {
+        var values = search.find('select.Choose').val();
+        for (var i = 0; i < values.length; i++) {
+          searchItemsSelected.push(parseInt(values[i]));
         }
       }
-    });
-    if (searchItemsSelected[0] === '') {
-      searchItemsSelected.splice(0, 1);
+      search.find('div.searchSelItem').each(function() {
+        if ($.inArray(parseInt($(this).data('key')), searchItemsSelected) == -1) {
+          if (!($(this).css('display') === 'none')) {
+            $(this).slideUp(300);
+          }
+        } else {
+          if ($(this).css('display') === 'none')  {
+            $(this).slideDown(300);
+          }
+        }
+      });
+      if (searchItemsSelected[0] === '') {
+        searchItemsSelected.splice(0, 1);
+      }
+      updateDisplayItems(searchItemsSelected, progData);
     }
-    updateDisplayItems(searchItemsSelected, majorData);
   }
-}
 
-function updateDisplayItems(searchItemsSelected, searchItemData) {
-  var displayItems = [];
-  var idx = 0;
+  // Update display to match search results
+  function updateDisplayItems(searchItemsSelected, searchelData) {
+    var displayItems = [];
+    var idx = 0;
+    var type = 'prog';
+    if (!searchByCourse) {
+      idx = 1;
+      type = 'course';
+    }
+    
+    resetDisplay(type);
 
-  if (!searchByCourse) {
-    idx = 1;
+    for (var i = 0; i < searchItemsSelected.length; i++) {
+      var searchItem = searchItemsSelected[i];
+      if (i > 0) {
+        displayItems = intersect(displayItems, searchelData[searchItem]['appr']);
+      } else {
+        displayItems = searchelData[searchItem]['appr'].slice();
+      }
+    }
+        
+    enableDisplayItems(displayItems);
   }
   
-  resetDisplay(displayItemsEnabled[idx]);
-
-  for (var i = 0; i < searchItemsSelected.length; i++) {
-    var searchItem = searchItemsSelected[i];
-    if (i > 0) {
-      displayItems = intersect(displayItems, searchItemData[searchItem][2]);
+  // Display all results as "enabled" in display pane
+  function enableDisplayItems(displayItems) {
+    var type = 'course';
+    if (searchByCourse) {
+      type = 'prog';
+    }
+    var display = $('div#' + type + 'DisplayWrapper');
+    for (var i = 0; i < displayItems.length; i++) {
+      var displayItemDiv = display.find('a[data-key="' + displayItems[i] + '"]');
+      displayItemDiv.addClass("active");
+      displayItemDiv.find('i.ballot').addClass('hide');
+      displayItemDiv.find('i.check').removeClass('hide');
+    }
+  }
+  
+  
+  
+  
+  
+  ///////////////////////////////////////
+  //
+  // UI Interaction
+  //
+  ///////////////////////////////////////
+  
+  // Expand/collapse display group
+  function toggleGroup(element) {
+    var el = $(element);
+    if (el.hasClass('collapsed')) {
+      el.find('div.collapser').animateRotate(90, 0, 200);
+      el.find('.plus').fadeOut(300);
+      el.next().slideDown(300);
+      el.removeClass('collapsed');
     } else {
-      displayItems = searchItemData[searchItem][2].slice();
+      el.find('div.collapser').animateRotate(0, 90, 200);
+      el.find('.plus').fadeIn(300);
+      el.next().slideUp(300);
+      el.addClass('collapsed');
+    }
+  }
+
+  // Expand/collapse all display groups at once
+  function toggleGroups() {
+    var display = $('div#courseDisplayWrapper');
+    var oppDisplay = $('div#progDisplayWrapper');
+    if (searchByCourse) {
+      display = $('div#progDisplayWrapper');
+      oppDisplay = $('div#courseDisplayWrapper');
+    }
+    if (divide) {
+      if (display.hasClass('collapsed')) {
+        display.find('h2').each(function() {
+          if ($(this).hasClass('collapsed')) {
+            toggleGroup($(this));
+          }
+        });
+        oppDisplay.find('h2').each(function() {
+          if ($(this).hasClass('collapsed')) {
+            toggleGroup($(this));
+          }
+        });
+        $('.collapseAll').animateRotate(90, 0, 200);
+        $('.collapseAll').find('.plus').fadeOut(300);
+        display.removeClass('collapsed');
+        oppDisplay.removeClass('collapsed');
+      } else {
+        display.find('h2').each(function() {
+          if (!$(this).hasClass('collapsed')) {
+            toggleGroup($(this));
+          }
+        });
+        oppDisplay.find('h2').each(function() {
+          if (!$(this).hasClass('collapsed')) {
+            toggleGroup($(this));
+          }
+        });
+        $('.collapseAll').animateRotate(0, 90, 200);
+        $('.collapseAll').find('.plus').fadeIn(300);
+        display.addClass('collapsed');
+        oppDisplay.addClass('collapsed');
+      }
     }
   }
   
-  displayItemsEnabled[idx] = displayItems;
+  // Expand/collapse top menu
+  function toggleMenu() {
+    var menuToggler = $('div#menuToggle');
+    if (menuToggler.hasClass('collapsed')) {
+      $('div#topBarInner').slideDown(200, setSizes);
+      menuToggler
+        .removeClass('collapsed');
+    } else {
+      $('div#topBarInner').slideUp(200, setSizes);
+      menuToggler
+        .addClass('collapsed');
+    }
+  }
+
+  // Expand/collapse search pane
+  function toggleSearchPane() {
+    var paneToggler = $('#paneToggler');
+    if (paneToggler.hasClass('collapsed')) {
+      $('div.searchWrapper.shown').slideDown(300);
+      $('div#invertSearch').slideDown(300);
+      paneToggler
+        .removeClass('collapsed')
+        .children().first().animateRotate(180, 0, 200);
+    } else {
+      $('div.searchWrapper.shown').slideUp(300);
+      $('div#invertSearch').slideUp(300);
+      paneToggler
+        .addClass('collapsed')
+        .children().first().animateRotate(0, 180, 200);
+    }
+  }
+
+  // Toggle display by group on/off
+  function groupItems() {
+    if (divide) {
+      $('button#divide').find('div#showHideText').text('Show');
+      $('div#courseDisplayWrapper').find('.collapseAll').fadeOut(300);
+      $('div#progDisplayWrapper').find('.collapseAll').fadeOut(300);
+    } else {
+      $('button#divide').find('div#showHideText').text('Hide');
+      $('div#courseDisplayWrapper').find('.collapseAll').fadeIn(300);
+      $('div#progDisplayWrapper').find('.collapseAll').fadeIn(300);
+    }
+    divide = !divide;
+    attachDisplayItems('course', courseData);
+    attachDisplayItems('prog', progData);
+  }
+
+  // Switch between searching by courses/programs
+  function inverter() {
+    var invertText;
+    var groupName;
+
+    if (searchByCourse) {
+      searchByCourse = false;
+      invertText = 'Search By Course';
+      groupName = 'Categories';
+    } else {
+      searchByCourse = true;
+      invertText = 'Search By Program';
+      groupName = 'Colleges';
+    }
+    if ($('div#courseSearchWrapper').hasClass('shown')) {
+      $('div#courseSearchWrapper')
+            .slideUp(300, function() {
+              $('div#progSearchWrapper').slideDown(300).addClass('shown')
+            })
+            .removeClass('shown');
+      $('div#progDisplayWrapper')
+            .fadeOut(300, function() {
+              $('div#courseDisplayWrapper').fadeIn(300).addClass('shown')
+            })
+            .removeClass('shown');
+    } else {
+      $('div#progSearchWrapper')
+            .slideUp(300, function() {
+              $('div#courseSearchWrapper').slideDown(300).addClass('shown')
+            })
+            .removeClass('shown');
+      $('div#courseDisplayWrapper')
+            .fadeOut(300, function() {
+              $('div#progDisplayWrapper').fadeIn(300).addClass('shown')
+            })
+            .removeClass('shown');
+    }
+    $('div#invertSearch').text(invertText);
+    $('div#divideText').text(groupName);
+  }
+
   
-  enableDisplayItems();
-}
+  
+  
+  
+  ///////////////////////////////////////
+  //
+  // UI reset methods
+  //
+  ///////////////////////////////////////
+  
+  // Reset the entire UI to initial defaults specified in DB
+  function resetAll() {
+    resetSearch();
+    resetDisplay('prog');
+    resetDisplay('course');
+    if (divide !== metaData['divide']) {
+      groupItems();
+    }
+    if (divide) {
+      if ($('div#courseDisplayWrapper').hasClass('collapsed')) {
+        toggleGroups();
+      }
+    }
+    if (searchByCourse !== metaData['searchByCourse']) {
+      inverter();
+    }
+    if ($('div#paneToggler').hasClass('collapsed')) {
+      toggleSearchPane();
+    }
+  }
+  
+  // Reset the search pane to initial state
+  function resetSearch() {
+    $('select').val('');
+    $('div#searchSelected').find('div.searchSelItem').each(function() {
+      if ($(this).css('display') === 'block') {
+        $(this).slideUp(300);
+      }
+    });
+  }
+  
+  // Reset the display pane to initial state
+  function resetDisplay(type) {
+    $('div#' + type + 'DisplayWrapper').find('a.displayItem').each(function() {
+      if ($(this).hasClass('active')) {
+        $(this).removeClass('active');
+        $(this).find('i.ballot').removeClass('hide');
+        $(this).find('i.check').addClass('hide');
+      }
+    });
+  }
 
-function URL2img(string) {
-	return string.replace(/[:\/%#]+/g, "_") + ".png";
-}
+  // Remove a term from the search by key
+  function removeSelected(key) {
+    $('select.Choose').find('option[value="' + key + '"]').prop('selected', false);
+    updateDisplay();
+  }
 
 
+
+
+
+  ///////////////////////////////////////
+  //
+  // Resizing methods
+  //
+  ///////////////////////////////////////
+
+  // Dynamically set height of search viewport
+  function setSearchHeight() {
+    var searchHeight = window.innerHeight - $('#topBar').outerHeight()
+          - $('#invertSearch').outerHeight() - $('div#paneToggler').outerHeight() - 20;
+    $('div#courseSearchWrapper').css('max-height', searchHeight);
+    $('div#progSearchWrapper').css('max-height', searchHeight);
+  }
+  
+  // Dynamically set height of display viewport
+  function setDisplayHeight() {
+    var displayHeight = window.innerHeight - $('#topBar').outerHeight();
+    $('div#displayViewport').css('max-height', displayHeight);
+  }
+  
+  // Dynamically set sizes for all affected UI elements
+  function setSizes() {
+    var displayViewport = $('#displayViewport');
+    var searchColumn = $('#searchColumn');
+    var topBar = $('#topBar');
+    var paneToggler = $('#paneToggler');
+    var type = 'prog';
+    if (searchByCourse) {
+      type = 'course';
+    }
+    paneToggler.css('bottom', 0 - paneToggler.height());
+    if (!isMobile()) {
+      var progSelect = $('div#progSearchWrapper').find('select');
+      if (progSelect.children().length > 13) {
+        progSelect.css('height', '15em');
+      } else {
+        progSelect.css('height', (progSelect.children().length + 1) + 'em');
+      }
+    }
+    
+    setSearchHeight();
+    setDisplayHeight();
+  }
 
 
 
   
-
-
-//Main program
-$( document ).ready(function() {
-	//Get source data
-	 $.ajax({
-		url: dataURL,
-		type: 'get',
-		dataType: 'html',
-		async: false,
-		success: function(data) {
-			srcData = data;
-		}
-	 });
-	srcData = stripQuotes(srcData.replace(/\r\n/gm, "\n")).split("\n");
-	headings = srcData[0].split('\t');
-	categories = srcData[1].split('\t');
-  getHeadings();
-  getData();
   
-  //Initialize display
-  showHidePanes();
-  shownSearch.css('display', 'none');
-  shownDisplay.css('display', 'none');
-  hiddenSearch.css('display', 'none');
-  hiddenDisplay.css('display', 'none');
+  ///////////////////////////////////////
+  //
+  // Background display
+  //
+  ///////////////////////////////////////
+  
+  //Build and pre-load backgrounds
+  function buildBG() {
+    if (metaData['bg'].length > 0) {
+      for (var i = 0; i < metaData['bg'].length; i++) {
+        var newBG = $('<div id="bg' + i + '" data-idx="' + i + '" class="bgslide"></div>');
+        newBG.css('background-image', 'url(' + metaData['bg'][i] + ')');
+        $('div#bgContainer').append(newBG);
+        if (i === metaData['bg'].length - 1) {
+          $.get(metaData['bg'][i], function() {
+            setTimeout(function() {
+              $('div#loading').fadeOut(400);
+            }, 1500);
+          });
+        } else {
+          $.get(metaData['bg'][i]);
+        }
+      }
+    } else {
+      setTimeout(function() {
+        $('div#loading').fadeOut(400);
+      }, 1500);
+    }
+  }
+  
+  //Pick random starting background
+  function bgInitRand() {
+    var randBG = Math.floor(Math.random() * metaData['bg'].length);
+    $('div#bg' + randBG).addClass('visible').css('display', 'block');
+  }
+  
+  // Advance to next background image
+  function advanceBG() {
+    var bgContainer = $('div#bgContainer')
+    var cur = bgContainer.find('div.visible');
+    if (cur.attr('data-idx') < bgContainer.children().length - 1) {
+      cur.removeClass('visible');
+      cur.fadeOut(2000);
+      cur.next().fadeIn(2000);
+      cur.next().addClass('visible');
+    } else {
+      cur.removeClass('visible');
+      cur.fadeOut(2000);
+      bgContainer.children().first().fadeIn(2000);
+      bgContainer.children().first().addClass('visible');
+    }
+  }
 
-	//Define global event handlers
-  $('#help').click(advanceTour);
+    
+    
+    
+    
+  ///////////////////////////////////////
+  //
+  // Comparators
+  //
+  ///////////////////////////////////////
+
+  // Compare course keys by name
+  function compareCourse(key1, key2) {
+    return courseData[key1]['name'].localeCompare(courseData[key2]['name']);
+  }
+
+  // Compare program keys by name
+  function compareProg(key1, key2) {
+    return progData[key1]['name'].localeCompare(progData[key2]['name']);
+  }
+
+  // Compare category keys by name
+  function compareCat(key1, key2) {
+    return catData[key1]['name'].localeCompare(catData[key2]['name']);
+  }
+
+  // Compare college keys by name
+  function compareCol(key1,key2) {
+    return stripStartingFiller(colData[key1]['name'])
+          .localeCompare(stripStartingFiller(colData[key2]['name']));
+  }
+    
+    
+
+  ///////////////////////////////////////
+  //
+  // Main program
+  //
+  ///////////////////////////////////////
+
+  // Insert logo
+  $('div.logo').html(metaData['logo']);
+
+  // Set link to help page
+  $('a#help').attr('href', metaData['help']);
+  
+  // Set favicon
+  $('link#favicon').attr('href', metaData['favicon']);
+  
+  // Define global event handlers
   $('#paneToggler').click(toggleSearchPane);
-	$('#reset').click({element: reset}, resetter);
-  $('#tour').click(function() {
-    $('#help').fadeIn(300);
-    advanceTour();
-  });
-  $('#divide').find('.toggle').toggles({on: divide}).on('toggle', groupItems);
+  $('button#reset').click(resetAll);
+  $('button#divide').click(groupItems);
   $('#invertSearch').click(inverter);
-	shownDisplay.find('.displayHeader').click(toggleGroups);
-	hiddenDisplay.find('.displayHeader').click(toggleGroups);
-  $('#menuToggle').hover(function() {
-    $(this).find('span').css('background-color', '#FFF')
+  $('h1.displayHeader').hover(function() {
+    $(this).find('i.col1').css('color', shadeBlendConvert(0.3, metaData['col1']))
   }, function() {
-    $(this).find('span').css('background-color', '#EEE')
-  }).click(toggleSettingsPane);
+    $(this).find('i.col1').css('color', metaData['col1'])
+  });
+  $('h1.displayHeader').click(toggleGroups);
   $(feedbackTitle).click(function() {
     if ($(feedbackContainer).hasClass('collapsed')) {
       $(feedbackContainer).removeClass('collapsed');
-      $(feedbackContentWrapper).slideUp(300);
+      $(feedbackContentWrapper).slideUp(200);
     } else {
       $(feedbackContainer).addClass('collapsed');
-      $(feedbackContentWrapper).slideDown(300);
+      $(feedbackContentWrapper).slideDown(200);
     }
   });
-  $('#freezeViewport').click(toggleSettingsPane);
-	$(window).on('resize', setSizes);
+  $(window).on('resize', setSizes);
 
-  
-  
-  //Build dynamic page content
+  // Build dynamic page content
   buildAll();
+  
+  // Assign display colors programmatically
+  processColors();
+  
+  // Build background images
+  buildBG();
+  
+  // Randomize initial bg display
+  bgInitRand();
+  
+  // Start bg div rotation
+  setInterval(advanceBG, 30000);
+  
+  // Collapse top menu on small screens
+  if ($(window).width() <= 400) {
+    $('div#menuToggle').addClass('collapsed');
+    $('div#topBarInner').css('display', 'none');
+  }
+  
+  // Dynamically resize
   setSizes();
   
-  helpPages = $('#help').children('div');
-  for (var i = 0; i < helpPages.length; i++) {
-    var helpPage = $(helpPages[i]);
-    var progress = helpPage.find('div.progress');
-    progressString = '';
-    for (var j = 0; j < helpPages.length; j++) {
-      if (j == i) {
-        progressString += ' \u25cf';
-      } else {
-        progressString += ' \u25cb';
-      }
-    }
-    progress.text(progressString);
-  }
-  advanceTour();  
-
-});
+}
