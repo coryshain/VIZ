@@ -1,0 +1,1 @@
+{"courseData":{},"progData":{},"catData":{},"colData":{},"metaData":{"col1":"#CC0000","col2":"#555555","curKey":0,"website":"http://www.osu.edu","divide":true,"searchByCourse":true,"logo":"","bg":[],"help":"","favicon":""}}
