@@ -24,11 +24,11 @@ Installing VIZ is simple:
 1. Clone or copy this directory to the desired location
 on your web server.
 2. Install the required third-party components:
-- Skeleton (http://getskeleton.com/)
--- Extract Skeleton-2.0.4 to your VIZ directory root
-- FileSaver (https://github.com/eligrey/FileSaver.js/)
--- Copy FileSaver.min.js to the /js folder of your
-VIZ directory
+  a. Skeleton (http://getskeleton.com/)
+    i. Extract Skeleton-2.0.4 to your VIZ directory root
+  b. FileSaver (https://github.com/eligrey/FileSaver.js/)
+    I. Copy FileSaver.min.js to the /js folder of your
+    VIZ directory
 3. Build your database using VIZ Builder
 
 VIZ distributes with a correctly-structured blank
