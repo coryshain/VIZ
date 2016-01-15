@@ -32,7 +32,7 @@ on your web server.
 3. Build your database using VIZ Builder
 
 VIZ distributes with a correctly-structured blank
-database file (vizDB.txt). A blank database can be
+database file (/data/vizDB.txt). A blank database can be
 generated at any time from VIZ Builder by selecting
 "Start New Database" and immediately downloading the
 current database.
