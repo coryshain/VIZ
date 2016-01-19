@@ -39,10 +39,10 @@ current database.
 
 The content of the database is simple JSON, but manual editing
 is discouraged because of the potential for error. While
-VIZ Builder does have some data verification features for
-uploaded database files, neither VIZ Builder or VIZ itself
-verify the database already existing on the server, and errors
-in it can break functionality in both tools. Database output
+VIZ Builder does have some data validation features for
+database files used as input, VIZ itself does not validate
+the database already existing on the server, and errors
+can break functionality for end users. Database output
 from VIZ Builder should always be correct if it is provided
 with a correctly-structured input database. For this reason,
 it is strongly encouraged to use VIZ Builder exclusively to make

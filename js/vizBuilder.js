@@ -49,63 +49,62 @@
   
   // Load input DB from server
   function loadVIZ() {
+    $('div#uploadDB').find('div.warn').css('display', 'none');
     $.ajax({
       url: 'data/vizDB.txt',
       type: 'get',
       dataType: 'json',
       async: true,
       success: function(db) {
-        allData = db;
-        assignDataLabels();
-        buildUI();
+        if (validDB(db)) {
+          allData = db;
+          assignDataLabels();
+          buildUI();
+          $('div#loading').fadeOut(200);
+          $('div#uploadDB').fadeOut(300);
+          removeElement('uploadDB', zStack);
+          unfreeze();
+        } else {
+          $('div#uploadWarn3').css('display', 'block');
+          $('div#loading').fadeOut(200);
+        }
+      },
+      error: function() {
+        $('div#uploadWarn2').css('display', 'block');
         $('div#loading').fadeOut(200);
-        $('div#uploadDB').fadeOut(300);
-        removeElement('uploadDB', zStack);
-        unfreeze();
       }
     });
   }
   
   // Upload and create VIZ DB from user file
   function openFile() {
+    $('div#uploadDB').find('div.warn').css('display', 'none');
     var success = false;
+    var parsed = false;
     input = document.querySelector('input#DBInput');
     if (input.files[0]) {
       var reader = new FileReader();
       reader.onload = function() {
         try {
           theData = $.parseJSON(reader.result);
-          if ('courseData' in theData &&
-              'catData' in theData &&
-              'progData' in theData &&
-              'colData' in theData&&
-              'metaData' in theData &&
-              'col1' in theData['metaData'] &&
-              'col2' in theData['metaData'] &&
-              'curKey' in theData['metaData'] &&
-              'divide' in theData['metaData'] &&
-              'searchByCourse' in theData['metaData'] &&
-              'website' in theData['metaData'] &&
-              'logo' in theData['metaData'] &&
-              'bg' in theData['metaData'] &&
-              'help' in theData['metaData'] &&
-              'favicon' in theData['metaData'] &&
-              'email' in theData['metaData']) {
-              
+          parsed = true;
+          if (validDB(theData)) {
             allData = theData;
             assignDataLabels();
             buildUI();
-            $('div#loading').fadeOut(200);
             $('div#uploadDB').fadeOut(300);
             removeElement('uploadDB', zStack);
             unfreeze();
             success = true;
           }
-        } finally {
-          if (!success) {
-            $('div#loading').css('display', 'none');
-            $('div#uploadWarn2').css('display', 'block');
+        } catch(e) {
+          $('div#uploadWarn2').css('display', 'block');          
+        }
+        finally {
+          if (parsed && !success) {
+            $('div#uploadWarn3').css('display', 'block');
           }
+          $('div#loading').fadeOut(200);
         }
       };
       reader.readAsText(input.files[0]);
@@ -989,6 +988,29 @@
   //
   ///////////////////////////////////////
 
+  // Validate structure of DB
+  function validDB(db) {
+    if ('courseData' in db &&
+        'catData' in db &&
+        'progData' in db &&
+        'colData' in db&&
+        'metaData' in db &&
+        'col1' in db['metaData'] &&
+        'col2' in db['metaData'] &&
+        'curKey' in db['metaData'] &&
+        'divide' in db['metaData'] &&
+        'searchByCourse' in db['metaData'] &&
+        'website' in db['metaData'] &&
+        'logo' in db['metaData'] &&
+        'bg' in db['metaData'] &&
+        'help' in db['metaData'] &&
+        'favicon' in db['metaData'] &&
+        'email' in db['metaData']) {
+          return true;
+    }
+    return false;
+  }
+  
   // Validate group creation input
   function validCatAdd(cat, type, parent) {
     if (cat.length === 0) {
