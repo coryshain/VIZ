@@ -14,8 +14,11 @@ body {
 
 h1, h2, h3, h4 {
   color: #555555;
-  text-transform: lowercase;
-  font-variant: small-caps;
+  text-transform: uppercase;
+}
+
+h1 span, h2 span, h3 span, h4 span {
+  vertical-align: text-top;
 }
 
 .block {

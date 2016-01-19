@@ -75,20 +75,22 @@
       reader.onload = function() {
         try {
           theData = $.parseJSON(reader.result);
-          if (theData['courseData'] &&
-              theData['catData'] &&
-              theData['progData'] &&
-              theData['colData'] &&
-              theData['metaData'] &&
-              theData['metaData']['col1'] &&
-              theData['metaData']['col2'] &&
-              theData['metaData']['curKey'] &&
-              theData['metaData']['website'] &&
-              theData['metaData']['logo'] &&
-              theData['metaData']['bg'] &&
-              theData['metaData']['help'] &&
-              theData['metaData']['favicon'] &&
-              theData['metaData']['email']) {
+          if ('courseData' in theData &&
+              'catData' in theData &&
+              'progData' in theData &&
+              'colData' in theData&&
+              'metaData' in theData &&
+              'col1' in theData['metaData'] &&
+              'col2' in theData['metaData'] &&
+              'curKey' in theData['metaData'] &&
+              'divide' in theData['metaData'] &&
+              'searchByCourse' in theData['metaData'] &&
+              'website' in theData['metaData'] &&
+              'logo' in theData['metaData'] &&
+              'bg' in theData['metaData'] &&
+              'help' in theData['metaData'] &&
+              'favicon' in theData['metaData'] &&
+              'email' in theData['metaData']) {
               
             allData = theData;
             assignDataLabels();

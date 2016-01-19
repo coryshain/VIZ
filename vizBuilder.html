@@ -187,7 +187,7 @@
   
       <!-- Course add pane -->
       <div id="courseAdd" class="one-half column">
-        <h1 class="center">Add a Course</h1>
+        <h1 class="center"><span>Add a Course</span></h1>
         <label for="courseName">Name: </label>
         <input type="text" id="courseName" class="nameInp u-full-width"><br>
         <div id="courseNameWarn1" class="warn name1">Name cannot be blank.</div>
@@ -203,7 +203,7 @@
       
       <!-- Program add pane -->
       <div id="progAdd" class="one-half column">
-        <h1 class="center">Add a Program</h1>
+        <h1 class="center"><span>Add a Program</span></h1>
         <label for="progName">Name: </label>
         <input type="text" id="progName" class="nameInp u-full-width"><br>
         <div id="progNameWarn1" class="warn name1">Name cannot be blank.</div>
@@ -223,7 +223,7 @@
         
     <!-- Metadata editor pane -->
     <div id="props" class="row">
-      <h1 class="center">Edit VIZ Properties</h1>
+      <h1 class="center"><span>Edit VIZ Properties</span></h1>
       <div class="row" id="propEdit">
         <div id="propEdit1" class="one-half column">
           <label for="primCol">Primary Color: </label>
@@ -264,11 +264,23 @@
     <!-- Course and progam lists (editor dialogs accessible from here for existing items) -->
     <div class="row">
       <div class="one-half column">
-        <h2 id="courseListHeader" class="center">Course List <span class="collapser"><i class="fa fa-minus minus"></i><i class="fa fa-plus plus"></i></span></h2>
+        <h2 id="courseListHeader" class="center">
+          <span>Course List </span>
+          <span class="collapser">
+            <i class="fa fa-minus minus"></i>
+            <i class="fa fa-plus plus"></i>
+          </span>
+        </h2>
         <div id="courseList"></div>
       </div>
       <div class="one-half column">
-        <h2 id="progListHeader" class="center">Program List <span class="collapser"><i class="fa fa-minus minus"></i><i class="fa fa-plus plus"></i></span></h2>
+        <h2 id="progListHeader" class="center">
+          <span>Program List </span>
+          <span class="collapser">
+            <i class="fa fa-minus minus"></i>
+            <i class="fa fa-plus plus"></i>
+          </span>
+        </h2>
         <div id="progList"></div>
       </div>
     </div>

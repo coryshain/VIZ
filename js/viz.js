@@ -188,9 +188,9 @@ function buildVIZ(allData) {
     // Prevent orphaning of collapser by grouping it with last word
     var nameVector = groupData[groupKey]['name'].split(' ');
     var newGroup = $('<div class="displayCategory" data-key="' + groupKey + '">'
-          + '<h2 class="displayCategoryTitle">' + nameVector.slice(0, -1).join(' ')
-          + ' </h2><div class="displayCategoryContainer"></div></div>');
-    var collapserGroup = $('<div class="collapserGroup">' + nameVector.slice(-1) + '</div>');
+          + '<h2 class="displayCategoryTitle"><span>' + nameVector.slice(0, -1).join(' ')
+          + ' </span></h2><div class="displayCategoryContainer"></div></div>');
+    var collapserGroup = $('<div class="collapserGroup"><span>' + nameVector.slice(-1) + ' </span></div>');
     newGroup.find('h2.displayCategoryTitle').append(collapserGroup);
     buildCollapser(collapserGroup);
     
