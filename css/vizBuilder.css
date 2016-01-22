@@ -55,7 +55,7 @@ textarea {
 }
 
 /* 2.b. Initial save alert splash div */
-#saveAlert {
+#splashAlert {
   display: none;
   position: fixed;
   height: 100vh;
@@ -64,7 +64,12 @@ textarea {
   z-index: 3000;
 }
 
-#saveAlertText {
+#splashAlertIcon {
+  color: #FF0000;
+  font-size: 10vw;
+}
+
+#splashAlertContent {
   position: absolute;
   max-width: 500px;
   top: 50%;
@@ -225,6 +230,10 @@ textarea {
   -moz-border-radius: 1em;
   -webkit-border-radius: 1em;
   -ms-border-radius: 1em;
+}
+
+#deleteMessage {
+  color: #CC0000;
 }
 
 

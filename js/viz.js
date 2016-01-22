@@ -328,8 +328,13 @@ function buildVIZ(allData) {
     var newGroup = $('<div><label class="searchCategory title" for="'
           + groupName + ' data-key="' + groupKey + '"">' + groupName + ': </label></div>');
     $('div#' + type + 'SearchWrapper').find('div.searchList').append(newGroup);
-          
-    var newSelect = $('<select class="u-full-width"><option class="blank"></option></select>');
+              
+    if (type === 'prog') {
+      buildAnyAll();
+    }
+              
+    var newSelect = $('<select class="u-full-width"><option class="blank" value="-1">'
+            + '</option></select>');
     newGroup.append(newSelect);
     newSelect.change(updateDisplay);
     if (type === 'prog') {
@@ -364,6 +369,47 @@ function buildVIZ(allData) {
       }
     }
   }
+  
+  // Build any/all selector div
+  function buildAnyAll() {
+    var allAny = $('<div id="allAny"></div>');
+    var wtHeader = $('<div id="wtHeader" class="collapsed"><b>What\'s this?</b></div>');
+    var wtMsg = $('<div id="wtMsg"></div>');
+    var wtText = 'Select <b>all</b> to display courses that can fulfill'
+          + ' requirements for all selected programs. This is best for exploring'
+          + ' sttudents. It helps determine how broadly a course will apply across'
+          + ' the programs at the university.<br><br> Select <b>any</b> to display'
+          + ' courses that can fulfill requirements for any of the selected programs.'
+          + ' This is best for students interested in a combined program. It helps '
+          + 'determine classes needed to fulfill all requirements.'
+    wtHeader.click(function() {
+      if ($(this).hasClass('collapsed')) {
+        $(this).next().slideDown(300);
+        $(this).removeClass('collapsed');
+      } else {
+        $(this).next().slideUp(300);
+        $(this).addClass('collapsed');
+      }
+    });
+    wtMsg.append(wtText);
+    allAny
+          .append('<div id="setJoin"><b>Match: </b>'
+          + '<input type="radio" name="setJoin" checked="checked" '
+          + 'value="intersect" id="intersect"><label for="intersect"> All </label>'
+          + '<input type="radio" name="setJoin" id="union"'
+          + ' value="union"><label for="union"> Any </label></div>')
+          .append(wtHeader).append(wtMsg);
+    $('div#progSearchWrapper').find('h1.searchHeader')
+        .after(allAny);
+    $('input[name="setJoin"]:radio').change(function() {
+      updateDisplay();
+      if ($('input[name="setJoin"]:checked').val() === 'intersect') {
+        $('span#joinDescr').text('all selected programs');
+      } else {
+        $('span#joinDescr').text('any selected program');
+      }
+    });
+  }
 
   
   
@@ -378,19 +424,22 @@ function buildVIZ(allData) {
   // Intersect results from search terms and update display
   function updateDisplay() {
     searchItemsSelected = [];
+    setJoin = 'intersect';
     if (searchByCourse) {
       $('div#courseSearchWrapper').find('select').each(function() {
-        if (!($(this).val() === '')) {
+        if ($(this).val() !== '-1') {
           searchItemsSelected.push(parseInt($(this).val()));
         }
       });
-      updateDisplayItems(searchItemsSelected, courseData);
+      updateDisplayItems(searchItemsSelected, courseData, setJoin);
     } else {
       var search = $('div#progSearchWrapper');
-      if (search.find('select.Choose').val()) {
-        var values = search.find('select.Choose').val();
+      var values = search.find('select.Choose').val();
+      if (values) {
         for (var i = 0; i < values.length; i++) {
-          searchItemsSelected.push(parseInt(values[i]));
+          if (values[i] !== '-1') {
+            searchItemsSelected.push(parseInt(values[i]));
+          }
         }
       }
       search.find('div.searchSelItem').each(function() {
@@ -404,15 +453,15 @@ function buildVIZ(allData) {
           }
         }
       });
-      if (searchItemsSelected[0] === '') {
-        searchItemsSelected.splice(0, 1);
+      if ($('input[name="setJoin"]:checked').val() === 'union') {
+        setJoin = 'union'
       }
-      updateDisplayItems(searchItemsSelected, progData);
+      updateDisplayItems(searchItemsSelected, progData, setJoin);
     }
   }
 
   // Update display to match search results
-  function updateDisplayItems(searchItemsSelected, searchelData) {
+  function updateDisplayItems(searchItemsSelected, searchElData, setJoin) {
     var displayItems = [];
     var idx = 0;
     var type = 'prog';
@@ -423,12 +472,18 @@ function buildVIZ(allData) {
     
     resetDisplay(type);
 
-    for (var i = 0; i < searchItemsSelected.length; i++) {
-      var searchItem = searchItemsSelected[i];
-      if (i > 0) {
-        displayItems = intersect(displayItems, searchelData[searchItem]['appr']);
-      } else {
-        displayItems = searchelData[searchItem]['appr'].slice();
+    if (searchItemsSelected.length > 0) {
+      for (var i = 0; i < searchItemsSelected.length; i++) {
+        var searchItem = searchItemsSelected[i];
+        if (i > 0) {
+          if (setJoin === 'intersect') {
+            displayItems = intersect(displayItems, searchElData[searchItem]['appr']);
+          } else {
+            displayItems = union(displayItems, searchElData[searchItem]['appr']);
+          }
+        } else {
+          displayItems = searchElData[searchItem]['appr'].slice();
+        }
       }
     }
         
@@ -620,6 +675,7 @@ function buildVIZ(allData) {
   
   // Reset the entire UI to initial defaults specified in DB
   function resetAll() {
+    $('input[name="setJoin"][value="intersect"]').prop('checked', true);
     resetSearch();
     resetDisplay('prog');
     resetDisplay('course');
@@ -637,6 +693,8 @@ function buildVIZ(allData) {
     if ($('div#paneToggler').hasClass('collapsed')) {
       toggleSearchPane();
     }
+    $('div#displayViewport').animate({ scrollTop: 0 }, 300);
+    $('select.Choose').animate({ scrollTop: 0 }, 300);
   }
   
   // Reset the search pane to initial state

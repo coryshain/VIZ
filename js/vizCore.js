@@ -70,8 +70,42 @@ function isMobile() {
 //
 ///////////////////////////////////////
 
-// Add an element to an array only if unique
+// Check equality of two arrays
+function arrEq(A, B) {
+  var diff = firstDiff(A, B);
+  if (diff > -1) {
+    console.log('Arrays are not equal.');
+    console.log('At index ' + diff + ', first array contains '
+          + A[diff] + ', while second array contains ' + B[diff] + '.');
+    return false;
+  }
+  if (A.length !== B.length) {
+    console.log('Arrays not equal. Lengths differ.');
+    return false;
+  }
+  return true;
+}
+
+// Returns index of first different element in two sorted arrays
+function firstDiff(A, B) {
+  for (var i = 0; i < Math.min(A.length, B.length); i++) {
+    if (A[i] !== B[i]) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+// Add an element to an array.
 function addElement(element, array) {
+  if ($.inArray(element, array) === -1) {
+    array.push(element);
+  }
+}
+
+// Add an element to an array.
+// If already in array, move to last position.
+function addElementLast(element, array) {
   var idx = $.inArray(element, array);
   if (idx > -1) {
     array.splice(idx, 1);
@@ -93,6 +127,17 @@ function intersect(A, B){
         result.push(A[i]);
         break;
       }
+    }
+  }
+  return result;
+}
+
+// Return the union of two arrays
+function union(A, B){
+  var result = A.slice();
+  for (i = 0; i < B.length; i++) {
+      if ($.inArray(B[i], result) === -1) {
+        result.push(B[i]);
     }
   }
   return result;
@@ -138,4 +183,57 @@ function stripStartingFiller(collegeName) {
 // Compare divs by data-name attribute
 function compareName(A, B) {
   return $(A).attr('data-name').localeCompare($(B).attr('data-name'));
+}
+
+
+
+
+
+///////////////////////////////////////
+//
+// Data validation
+//
+///////////////////////////////////////
+
+// Checks if variable is a valid integer
+function validInt(n) {
+    return typeof n === 'number' && n % 1 === 0;
+}
+
+// Checks if variable is a valid string
+function validString(str) {
+  return typeof str === 'string';
+}
+
+// Checks if variable is a valid array
+function validArray(A) {
+  if (A) {
+    return A.constructor === Array;
+  }
+  return false;
+}
+
+// Checks if variable is a valid object
+function validObject(A) {
+  return A === Object(A);
+}
+
+// Checks if string is a valid hex color code
+function validHex(col) {
+  if (col) {
+    if (typeof col === 'string') {
+      if (col[0] === '#') {
+        if (col.length === 4 || col.length === 7) {
+          for (var i = 1; i < col.length; i++) {
+            var num = parseInt(col[i], 16);
+            if (isNaN(num)) {
+              return false;
+            }
+          }
+          return true;
+        }
+      }
+    }
+  }
+  return false;
 }

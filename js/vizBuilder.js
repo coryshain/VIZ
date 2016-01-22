@@ -57,16 +57,15 @@
       async: true,
       success: function(db) {
         if (validDB(db)) {
-          allData = db;
-          assignDataLabels();
-          buildUI();
-          $('div#loading').fadeOut(200);
-          $('div#uploadDB').fadeOut(300);
-          removeElement('uploadDB', zStack);
-          unfreeze();
-        } else {
-          $('div#uploadWarn3').css('display', 'block');
-          $('div#loading').fadeOut(200);
+          if (validData(db)) {
+            allData = db;
+            assignDataLabels();
+            buildUI();
+            $('div#loading').fadeOut(200);
+            $('div#uploadDB').fadeOut(300);
+            removeElement('uploadDB', zStack);
+            unfreeze();
+          }
         }
       },
       error: function() {
@@ -81,33 +80,33 @@
     $('div#uploadDB').find('div.warn').css('display', 'none');
     var success = false;
     var parsed = false;
-    input = document.querySelector('input#DBInput');
-    if (input.files[0]) {
+    uploadInput = document.querySelector('input#DBInput');
+    if (uploadInput.files[0]) {
       var reader = new FileReader();
       reader.onload = function() {
         try {
           theData = $.parseJSON(reader.result);
           parsed = true;
           if (validDB(theData)) {
-            allData = theData;
-            assignDataLabels();
-            buildUI();
-            $('div#uploadDB').fadeOut(300);
-            removeElement('uploadDB', zStack);
-            unfreeze();
-            success = true;
+            if (validData(theData)) {
+              allData = theData;
+              assignDataLabels();
+              buildUI();
+              $('div#uploadDB').fadeOut(300);
+              removeElement('uploadDB', zStack);
+              unfreeze();
+              success = true;
+            }
           }
-        } catch(e) {
+        }
+        catch(e) {
           $('div#uploadWarn2').css('display', 'block');          
         }
         finally {
-          if (parsed && !success) {
-            $('div#uploadWarn3').css('display', 'block');
-          }
           $('div#loading').fadeOut(200);
         }
       };
-      reader.readAsText(input.files[0]);
+      reader.readAsText(uploadInput.files[0]);
     } else {
       $('div#loading').css('display', 'none');
       $('div#uploadWarn1').css('display', 'block');
@@ -165,14 +164,28 @@
   
   // Add an undirected edge between a program and course
   function addEdge(courseKey, programKey) {
-    courseData[courseKey]['appr'].push(programKey);
-    progData[programKey]['appr'].push(courseKey);
+    addElement(parseInt(programKey), courseData[courseKey]['appr']);
+    addElement(parseInt(courseKey), progData[programKey]['appr']);
   }
   
   // Remove an undirected edge between a program and course
   function removeEdge(courseKey, programKey) {
-    courseData[courseKey]['appr'].splice($.inArray(programKey, courseData[courseKey]['appr']), 1);
-    progData[programKey]['appr'].splice($.inArray(courseKey, progData[programKey]['appr']), 1);
+    if ($.inArray(programKey, courseData[courseKey]['appr']) === -1) {
+      console.log(courseData[courseKey]['name']
+            + ' is not in the approved courses for '
+            + progData[programKey]['name']
+            + '.');
+    } else {
+      removeElement(programKey, courseData[courseKey]['appr']);
+    }
+    if ($.inArray(courseKey, progData[programKey]['appr']) === -1) {
+      console.log(progData[programKey]['name']
+            + ' is not in the approved courses for '
+            + courseData[courseKey]['name']
+            + '.');
+    } else {
+      removeElement(courseKey, progData[programKey]['appr']);
+    }
   }
   
   // Add a new element to the DB
@@ -283,14 +296,18 @@
     var newVal = manInput.val();
     if (type === 'bg') {
       if (newVal === '') {
-        $(this).parent().find('div#bgAddWarn1').css('display', 'block');
-        return;
+        manager.find('div#bgAddWarn1').css('display', 'block');
+      } else if ($.inArray(newVal, metaData['bg']) > -1) {
+        manager.find('div#bgAddWarn2').css('display', 'block');
+      } else {
+        metaData['bg'].push(newVal);
+        createBG(newVal);
+        setManSize(type);
+        manInput.val('');
+        showSuccess();
       }
-      metaData['bg'].push(newVal);
-      createBG(newVal);
-      showSuccess();
     } else {
-      if (!validCatAdd(newVal, type, $(this).parent())) {
+      if (!validCatAdd(newVal, type, manager.find('div#' + type + 'CreateContainer'))) {
         return;
       }
       var key = metaData['curKey'];
@@ -339,20 +356,22 @@
     buildEdHandlers($('div#courseEditor'), 'course');
     buildEdHandlers($('div#progEditor'), 'prog');
     
+    
+    
     for (c in courseData) {
-      createElement(c, 'course');
+      createElement(parseInt(c), 'course');
     }
     
     for (p in progData) {
-      createElement(p, 'prog');
+      createElement(parseInt(p), 'prog');
     }
     
     for (cat in catData) {
-      createGroup(cat, 'course');
+      createGroup(parseInt(cat), 'course');
     }
 
     for (col in colData) {
-      createGroup(col, 'prog');
+      createGroup(parseInt(col), 'prog');
     }
     
     for (var i = 0; i < metaData['bg'].length; i++) {
@@ -394,7 +413,8 @@
   
   // Build editor popups and define handlers
   function buildEdHandlers(editor, type) {
-    editor.find('button.nameSave').click(function() {
+    editor.find('button.nameSave').unbind('click').click(function() {
+      editor.find('div.warn').css('display', 'none');
       var elData = courseData;
       var oppData = progData;
       var groupData = catData;
@@ -407,7 +427,8 @@
       var header = editor.find('h3#' + type + 'EdTitle');
       var listEl = $('div#' + type + 'List').find('div[data-key="' + key + '"]');
       var listEdEl = $('div#' + opp[type] + 'EditorList').find('div[data-key="' + key + '"]');
-      var newName = $(this).parent().find('input.nameInp').val();
+      var nameInp = $(this).parent().find('input.nameInp');
+      var newName = nameInp.val();
       $(this).next().next().css('display', 'none');
       if (!(newName === elData[key]['name'])) {
         if (validName(editor, elData)){
@@ -418,10 +439,14 @@
           sortedAppend(listEl, $('div#' + type + 'List'), compareName);
           sortedAppend(listEdEl, $('div#' + opp[type] + 'EditorList'), compareName);
           showSuccess();
+          return
+        } else {
+          nameInp.val(elData[key]['name']);
         }
       }
     });
-    editor.find('button.catSave').click(function() {
+    editor.find('button.catSave').unbind('click').click(function() {
+      editor.find('div.warn').css('display', 'none');
       var elData = courseData;
       var oppData = progData;
       var groupData = catData;
@@ -431,16 +456,20 @@
         groupData = colData;
       }
       var key = parseInt(editor.attr('data-infocus'));
-      var newCat = $(this).parent().find('select.catInp').val();
+      var catInp = $(this).parent().find('select.catInp');
+      var newCat = catInp.val();
       $(this).next().next().css('display', 'none');
       if (!(newCat === elData[key]['cat'])) {
         if (validCat($(this).parent())) {
           groupSwitch(key, type, newCat);
           showSuccess();
+        } else {
+          catInp.val(elData[key]['cat']);
         }
       }
     });
-    editor.find('button.siteSave').click(function() {
+    editor.find('button.siteSave').unbind('click').click(function() {
+      editor.find('div.warn').css('display', 'none');
       var elData = courseData;
       var oppData = progData;
       var groupData = catData;
@@ -618,7 +647,7 @@
           }
         }
       }
-      addElement(editor.attr('id'), zStack);
+      addElementLast(editor.attr('id'), zStack);
       shuffleZ();
       editor.fadeIn(300);
       setEdSize(type);
@@ -630,7 +659,7 @@
         typeName = 'program';
       }
       $('div#freezeViewport').fadeIn(300);
-      addElement(deleter.attr('id'), zStack);
+      addElementLast(deleter.attr('id'), zStack);
       shuffleZ();
       deleter
           .attr('data-todelete', key)
@@ -670,9 +699,9 @@
     var newItemSave = $('<div class="subSave"><i class="fa fa-floppy-o"></i></div>');
     var newItemDel = $('<div class="subSave"><i class="fa fa-trash delete save"></i></div>');
     var addWarn1 = '<div id="' + groupType
-          + 'AddWarn1" class="warn">Name cannot be blank.</div>';
+          + 'AddWarn1" class="warn"><i class="fa fa-exclamation-triangle"></i> Name cannot be blank.</div>';
     var addWarn2 = '<div id="' + groupType + 'AddWarn2" class="warn">'
-          + groupLabel + ' with that name already exists.</div>'
+          + '<i class="fa fa-exclamation-triangle"></i> ' + groupLabel + ' with that name already exists.</div>'
     
     sortedAppend(newManagerItem, $('div#' + groupType + 'List'), compareName);
     newManagerItem
@@ -683,6 +712,7 @@
     newButtonContainer.append(newItemSave).append(newItemDel);
     newItemSave.click(function() {
       updateGroupName(groupKey, groupType);
+      setManSize(groupType);
     });
     newItemDel.click(function() {
       $('div#deleteList').text('');
@@ -695,11 +725,11 @@
         for (var i = 0; i < groupData[groupKey]['list'].length; i++) {
           createElementDIV($('div#deleteList'), groupData[groupKey]['list'][i], type);
         }
-        var deleteAlert = groupData[groupKey]['name']
+        var deleteAlert = '<i class="fa fa-exclamation-triangle"></i> ' + groupData[groupKey]['name']
               + ' cannot be deleted since it has the following items assigned to it:';
         $('div#deleteMessage').empty()
               .append(deleteAlert);
-        addElement('deleteAlert', zStack);
+        addElementLast('deleteAlert', zStack);
         shuffleZ();
         $('div#deleteAlert').fadeIn(300);
         setDeleteAlertSize();
@@ -738,7 +768,7 @@
     
   // Reveal manager popup
   function revealManager(type) {
-    addElement(type + 'Manage', zStack);
+    addElementLast(type + 'Manage', zStack);
     shuffleZ();
     $('div#' + type + 'Manage').fadeIn(300);
     setManSize(type);
@@ -823,6 +853,11 @@
       removeElement('courseEditor', zStack);
       unfreeze();
     });
+    $('button#closeValid').click(function() {
+      $('div#allGood').fadeOut(300);
+      removeElement('allGood', zStack);
+      unfreeze();
+    });
     $('button#progEditClose').click(function() {
       $('div#progEditor').fadeOut(300);
       removeElement('progEditor', zStack);
@@ -845,6 +880,8 @@
         metaData['logo'] = parent.find('textarea#logoHTML').val();
         if (validSite(parent)) {
           metaData['website'] = parent.find('input#defSite').val();
+        } else {
+          parent.find('input#defSite').val(metaData['website']);
         }
         if ($('input#helpURL').val() !== '') {
           metaData['help'] = $('input#helpURL').val();
@@ -893,7 +930,7 @@
     
     // Define top menu button behaviors
     $('button#uploadNew').click(function() {
-      addElement('uploadDB', zStack);
+      addElementLast('uploadDB', zStack);
       shuffleZ();
       $('div#uploadDB').fadeIn(300);
       $('div#freezeViewport').fadeIn(300);
@@ -906,8 +943,25 @@
     $('button#view').click(function() {
       window.open('data:text/plain;charset=utf-8,' + escape(JSON.stringify(allData, null, 2)));
     });
+    $('button#validate').click(function() {
+      if (validDB(allData)) {
+        if (validData(allData)) {
+          addElementLast('allGood', zStack);
+          shuffleZ();
+          $('div#allGood').fadeIn(300);
+          $('div#freezeViewport').fadeIn(300);
+        }
+      } else {
+        $('div#splashAlertText').text('Problems found. The database is' 
+        + ' incorrectly structured. Keys are missing, or contain incorrect' 
+        + ' values. You will either need to manually edit the database to'
+        + ' correct this problem, or start a new blank database. See your'
+        + ' browser\'s console for more details.').parent().parent().fadeIn(300);
+        
+      }
+    });
     $('button#download').click(function() {
-      addElement('downloadConf', zStack);
+      addElementLast('downloadConf', zStack);
       shuffleZ();
       $('div#freezeViewport').fadeIn(300);
       $('div#downloadConf').fadeIn(300);
@@ -916,8 +970,8 @@
       var dataBlob = new Blob([JSON.stringify(allData)], {type: "application/json;charset=utf-8"});
       saveAs(dataBlob, "vizDB.txt");
       $('div#downloadConf').fadeOut(300);
-      unfreeze();
       removeElement('downloadConf', zStack);
+      unfreeze();
     });
     $('button#preview').click(preview);
     $('div#menuToggle').click(toggleMenu);
@@ -929,9 +983,9 @@
     $('h2#progListHeader').click(function() {
       expandCollapse('prog');
     });
-    $('div#saveAlert').click(function() {
-      $(this).fadeOut(300);
-      removeElement('saveAlert', zStack);
+    $('div#splashAlert').click(function() {
+      $(this).fadeOut(300, function() {$(this).find('div#splashAlertText').text('')});
+      removeElement('splashAlert', zStack);
     });
   }
   
@@ -984,31 +1038,183 @@
   
   ///////////////////////////////////////
   //
-  // Input validation
+  // Input and database validation
   //
   ///////////////////////////////////////
 
   // Validate structure of DB
   function validDB(db) {
-    if ('courseData' in db &&
-        'catData' in db &&
-        'progData' in db &&
-        'colData' in db&&
-        'metaData' in db &&
-        'col1' in db['metaData'] &&
-        'col2' in db['metaData'] &&
-        'curKey' in db['metaData'] &&
-        'divide' in db['metaData'] &&
-        'searchByCourse' in db['metaData'] &&
-        'website' in db['metaData'] &&
-        'logo' in db['metaData'] &&
-        'bg' in db['metaData'] &&
-        'help' in db['metaData'] &&
-        'favicon' in db['metaData'] &&
-        'email' in db['metaData']) {
-          return true;
+    if (validObject(db['courseData']) && !validArray(db['courseData'])) {
+      if (validObject(db['catData']) && !validArray(db['catData'])) {
+        if (validObject(db['progData']) && !validArray(db['progData'])) {
+          if (validObject(db['colData']) && !validArray(db['colData'])) {
+            if (validObject(db['metaData']) && !validArray(db['metaData'])) {
+              if (validHex(db['metaData']['col1'])) {
+                if (validHex(db['metaData']['col2'])) {
+                  if (validInt(db['metaData']['curKey'])) {
+                    if (typeof db['metaData']['divide'] === 'boolean') {
+                      if (typeof db['metaData']['searchByCourse'] === 'boolean') {
+                        if (validString(db['metaData']['website']) && db['metaData']['website'].length > 0) {
+                          if (validString(db['metaData']['logo'])) {
+                            if (validArray(db['metaData']['bg'])) {
+                              if (validString(db['metaData']['help'])) {
+                                if (validString(db['metaData']['favicon'])) {
+                                  if (validString(db['metaData']['email'])) {
+                                    return true;
+                                  } else {
+                                    console.log('\'email\' either missing or not a valid string.');
+                                  }
+                                } else {
+                                  console.log('\'favicon\' either missing or not a valid string.');
+                                }
+                              } else {
+                                console.log('\'help\' either missing or not a valid string.');
+                              }
+                            } else {
+                              console.log('\'bg\' either missing or not a valid array.');                
+                            }
+                          } else {
+                            console.log('\'logo\' either missing or not a valid string.');
+                          }
+                        } else {
+                          console.log('\'website\' either missing, empty, or not a valid string.');                
+                        }
+                      } else {
+                        console.log('\'searchByCourse\' either missing or not a valid boolean.');                
+                      }
+                    } else {
+                      console.log('\'divide\' either missing or not a valid boolean.');                
+                    }
+                  } else {
+                    console.log('\'curKey\' either missing or not a valid integer.');                
+                  }
+                } else {
+                  console.log('\'col2\' either missing or not a valid hex color code.');                
+                }
+              } else {
+                console.log('\'col1\' either missing or not a valid hex color code.');                
+              }
+            } else {
+              console.log('\'metaData\' either missing or not a valid simple object.');
+            }
+          } else {
+            console.log('\'colData\' either missing or not a valid simple object.');
+          }
+        } else {
+          console.log('\'progData\' either missing or not a valid simple object.');
+        }
+      } else {
+        console.log('\'catData\' either missing or not a valid simple object.');
+      }
+    } else {
+      console.log('\'courseData\' either missing or not a valid simple object.');
     }
+    $('div#uploadWarn3').css('display', 'block');
+    $('div#loading').fadeOut(200);
     return false;
+  }
+  
+  // Validate correctness of content of entire DB
+  function validData(db) {
+    var timer = new Date();
+    var start = timer.getTime();
+    // Validate course -> program associations
+    if (!validEdges(db, 'course')) {
+      return false;
+    }
+    
+    // Validate program -> course associations
+    if (!validEdges(db, 'prog')) {
+      return false;
+    }
+    
+    // Validate course/category associations
+    if (!validGroups(db, 'cat')) {
+      return false;
+    }
+    
+    if (!validGroups(db, 'col')) {
+      return false;
+    }
+    
+    console.log('Database contents are valid.');
+    console.log('Validation took: ' + (timer.getTime() - start) + 'ms');
+    return true;
+  }
+  
+  // Validate approval links between courses and programs
+  function validEdges(db, baseType) {
+    var baseData = db['courseData'];
+    var targetData = db['progData'];
+    var baseLabel = 'course';
+    var targetLabel = 'program';
+    if (baseType === 'prog') {
+      baseData = db['progData'];
+      targetData = db['courseData'];
+      baseLabel = 'program';
+      targetLabel = 'course';
+    }
+    
+    for (baseEl in baseData) {
+      var appr = baseData[baseEl]['appr'].slice();
+      var apprCalcd = []
+      for (targetEl in targetData) {
+        if ($.inArray(parseInt(baseEl), targetData[targetEl]['appr']) > -1) {
+          apprCalcd.push(parseInt(targetEl));
+        }
+      }
+      appr.sort();
+      apprCalcd.sort();
+      if (!arrEq(appr, apprCalcd)) {
+        var errMsg = 'The database you have tried to load is corrupted.'
+        + ' The list of approved ' + baseLabel + 's under ' + baseData[baseEl]['name']
+        + ' is not identical to the list of ' + targetLabel + 's that include '
+        + baseData[baseEl]['name'] + ' as an approved ' + baseLabel + '.' 
+        + ' You will either need to manually edit the database to correct'
+        + ' this problem, or start a new blank database. See your browser\'s'
+        + ' console for more details.';
+        $('div#splashAlert').fadeIn(300).find('div#splashAlertText').text(errMsg);
+        return false;
+      }
+    }
+    return true;
+  }
+    
+  // Validate element/group associations
+  function validGroups(db, type) {
+    var elData = db['courseData'];
+    var groupData = db['catData'];
+    var elLabel = 'courses';
+    var groupLabel = 'category';
+    if (type === 'col') {
+      elData = db['progData'];
+      groupData = db['colData'];
+      elLabel = 'programs';
+      groupLabel = 'college/school';
+    }
+    for (group in groupData) {
+      var groupList = groupData[group]['list'].slice();
+      var groupListCalcd = [];
+      for (el in elData) {
+        if (elData[el]['cat'] === parseInt(group)) {
+          groupListCalcd.push(parseInt(el));
+        }
+      }
+      groupList.sort();
+      groupListCalcd.sort();
+      if (!arrEq(groupList, groupListCalcd)) {
+        var errMsg = 'The database you have tried to load is corrupted.'
+        + ' The set of ' + elLabel + ' listed under the ' + groupLabel + ' '
+        + groupData[group]['name'] + ' is not identical to the set of '
+        + elLabel + ' which list ' + groupData[group]['name'] + ' as their '
+        + groupLabel + '. You will either need to manually edit the database to'
+        + ' correct this problem, or start a new blank database. See your'
+        + ' browser\'s console for more details.';
+        $('div#splashAlert').fadeIn(300).find('div#splashAlertText').text(errMsg);
+        return false;
+      }
+    }
+    return true;
   }
   
   // Validate group creation input
@@ -1034,7 +1240,7 @@
   function validCat(parent) {
     var cat = parent.find('select.catInp').val();
     if (!cat) {
-      parent.find('div.cat').css('display', 'block');
+      parent.find('div.cat.warn').css('display', 'block');
       return false;
     }
     return true;
@@ -1061,7 +1267,7 @@
     var input = parent.find('input#defSite');
     var newDefSite = input.val();
     if (newDefSite.length === 0) {
-      parent.find('div.siteWarn1').css('display', 'block');
+      parent.find('div#siteWarn1').css('display', 'block');
       return false;
     }
     return true;
@@ -1145,7 +1351,7 @@
 
   
   //Show initial database dialog
-  addElement('uploadDB', zStack);
+  addElementLast('uploadDB', zStack);
   shuffleZ();
   $('div#uploadDB').fadeIn(300);
   $('div#freezeViewport').fadeIn(300);
@@ -1162,7 +1368,7 @@
   
   // Open for business
   $('div#loading').fadeOut(200, function() {
-    $('div#saveAlert').fadeIn(300);
+    $('div#splashAlert').fadeIn(300);
   });
-    
+
 }());

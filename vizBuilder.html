@@ -35,15 +35,23 @@
   <div id="freezeViewport"></div>
 
   <!-- Save alert -->
-  <div id="saveAlert">
-    <div id="saveAlertText">
-      For security reasons, saving and deleting in VIZ Builder does <b>not</b> affect the VIZ database on your website. To save your changes, download the new database from VIZ Builder and upload the file ("vizDB.txt") to the VIZ directory on your website.
+  <div id="splashAlert">
+    <div id="splashAlertContent">
+      <div id="splashAlertIcon">
+        <i class="fa fa-exclamation-triangle"></i>
+      </div>
+      <div id="splashAlertText">
+        For security reasons, saving and deleting in VIZ Builder does <b>not</b> affect the VIZ database 
+        on your website. To save your changes, download the new database from VIZ Builder and upload the 
+        file ("vizDB.txt") to the VIZ directory on your website.
+      </div>
     </div>
   </div>
   
   <!-- Download confirmation -->
   <div id="downloadConf" class="popUp">
-    This will download a copy of "vizDB.txt" containing all of your current changes. To save these changes to your website, upload "vizDB.txt" to the /data/ folder of the VIZ directory on your web server.<br>
+    This will download a copy of "vizDB.txt" containing all of your current changes. To save these changes 
+    to your website, upload "vizDB.txt" to the /data/ folder of the VIZ directory on your web server.<br>
     <button id="downloadYes">Download</button>
   </div>
   
@@ -51,12 +59,20 @@
   <div id="uploadDB" class="popUp">
     Select a VIZ database file to upload, import the current VIZ databse from the server, or start from a blank database.
     <input id="DBInput" type="file"></input><br>
-    <div id="uploadWarn1" class="warn">No file selected.</div>
-    <div id="uploadWarn2" class="warn">The selected file is not valid JSON.</div>
-    <div id="uploadWarn3" class="warn">The selected file is not a valid VIZ database.</div>
+    <div id="uploadWarn1" class="warn"><i class="fa fa-exclamation-triangle"></i> No file selected.</div>
+    <div id="uploadWarn2" class="warn"><i class="fa fa-exclamation-triangle"></i> The selected file is not valid JSON.</div>
+    <div id="uploadWarn3" class="warn"><i class="fa fa-exclamation-triangle"></i> The selected file is not a valid VIZ database.</div>
+    <div id="uploadWarn4" class="warn"><i class="fa fa-exclamation-triangle"></i> <span class="errMsg">The selected file is not a valid VIZ database.</span></div>
     <button id="confirmUpload"><i class="fa fa-upload"></i> Upload</button>
     <button id="import"><i class="fa fa-files-o"></i> Import From Server</button>
     <button id="startBlank"><i class="fa fa-file-o"></i> Start Blank Database</button>
+  </div>
+  
+  <!-- Validation successful -->
+  <div id="allGood" class="popUp">
+    <i class="fa fa-check" style="color: #00FF00"></i> Validation successful!<br>
+    No problems with the database detected.<br>
+    <button id="closeValid" class="close"><i class="fa fa-times"></i> Close</button>
   </div>
 
   <!-- Delete category alert (appears if category still has elements assigned) -->
@@ -71,8 +87,8 @@
     <div id="catCreateContainer">
       <button id="catCreateConf" class="edSave save"><i class="fa fa-floppy-o"></i> Add</button>
       <span class="edInp"><input type="text" id="catCreate"></span>
-      <div id="catAddWarn1" class="warn">Name cannot be blank.</div>
-      <div id="catAddWarn2" class="warn">Category with that name already exists.</div>
+      <div id="catAddWarn1" class="warn"><i class="fa fa-exclamation-triangle"></i> Name cannot be blank.</div>
+      <div id="catAddWarn2" class="warn"><i class="fa fa-exclamation-triangle"></i> Category with that name already exists.</div>
     </div>
     <div id="catList" class="list">
     </div>
@@ -84,8 +100,8 @@
     <div id="colCreateContainer">
       <button id="colCreateConf" class="edSave save"><i class="fa fa-floppy-o"></i> Add</button>
       <span class="edInp"><input type="text" id="colCreate"></span>
-      <div id="colAddWarn1" class="warn">Name cannot be blank.</div>
-      <div id="colAddWarn2" class="warn">College/School with that name already exists.</div>
+      <div id="colAddWarn1" class="warn"><i class="fa fa-exclamation-triangle"></i> Name cannot be blank.</div>
+      <div id="colAddWarn2" class="warn"><i class="fa fa-exclamation-triangle"></i> College/School with that name already exists.</div>
     </div>
     <div id="colList" class="list">
     </div>
@@ -98,7 +114,8 @@
       <span id="bgManText" class="block"> Enter the URL of the background image you want to add. Images must be hosted in the same domain as VIZ.</span>
       <button id="bgCreateConf" class="edSave save"><i class="fa fa-floppy-o"></i> Add</button>
       <span class="edInp"><input type="text" id="bgCreate"></span>
-      <div id="bgAddWarn1" class="warn">URL cannot be blank.</div>
+      <div id="bgAddWarn1" class="warn"><i class="fa fa-exclamation-triangle"></i> URL cannot be blank.</div>
+      <div id="bgAddWarn2" class="warn"><i class="fa fa-exclamation-triangle"></i> You have already added this URL.</div>
     </div>
     <div id="bgList" class="list">
     </div>
@@ -106,7 +123,7 @@
   </div>
   
   <!-- Item delete confirmation dialog -->
-  <div id="areUSure" class="popUp">Are you sure you want to delete the <span id="toDeleteType"></span> <span id="toDelete"></span>? All approval links will be lost. This cannot be undone.<br><button id="yesSure" class="save">Delete</button> <button id="noSure">Cancel</button></div>
+  <div id="areUSure" class="popUp"><i class="fa fa-exclamation-triangle"></i> Are you sure you want to delete the <span id="toDeleteType"></span> <span id="toDelete"></span>? All approval links will be lost. This cannot be undone.<br><button id="yesSure" class="save">Delete</button> <button id="noSure">Cancel</button></div>
   
   <!-- Course editor -->
   <div id="courseEditor" class="editor popUp">
@@ -116,12 +133,12 @@
         <label for="courseNameEd">Name: </label>
         <button id="courseNameSave" class="nameSave edSave save"><i class="fa fa-floppy-o"></i> Update</button>
         <span class="edInp"><input type="text" id="courseNameEd" class="nameInp"></input></span>
-        <div id="courseNameWarn1Ed" class="warn name1">Name cannot be blank.</div>
-        <div id="courseNameWarn2Ed" class="warn name2">Course with that name already exists.</div>
+        <div id="courseNameWarn1Ed" class="warn name1"><i class="fa fa-exclamation-triangle"></i> Name cannot be blank.</div>
+        <div id="courseNameWarn2Ed" class="warn name2"><i class="fa fa-exclamation-triangle"></i> Course with that name already exists.</div>
         <label for="courseCatEd">Course Category: </label>
         <button id="courseCatSave" class="catSave edSave save"><i class="fa fa-floppy-o"></i> Update</button>
         <span class="edInp"><select type="text" id="courseCatEd" class="catInp"></select></span>
-        <div id="courseCatWarnEd" class="warn cat">Course Category cannot be blank.</div>
+        <div id="courseCatWarnEd" class="warn cat"><i class="fa fa-exclamation-triangle"></i> Course Category cannot be blank.</div>
         <button class="u-full-width" data-type="cat"><i class="fa fa-wrench"></i> Manage Categories</button>
         <label for="courseSiteEd">Website: </label>
         <button id="courseSiteSave" class="siteSave edSave save"><i class="fa fa-floppy-o"></i> Update</button>
@@ -141,12 +158,12 @@
         <label for="progNameEd">Name: </label>
         <button id="progNameSave" class="nameSave edSave save"><i class="fa fa-floppy-o"></i> Update</button>
         <span class="edInp"><input type="text" id="progNameEd" class="nameInp"></input></span>
-        <div id="progNameWarn1Ed" class="warn name1">Name cannot be blank.</div>
-        <div id="progNameWarn2Ed" class="warn name2">Program with that name already exists.</div>
+        <div id="progNameWarn1Ed" class="warn name1"><i class="fa fa-exclamation-triangle"></i> Name cannot be blank.</div>
+        <div id="progNameWarn2Ed" class="warn name2"><i class="fa fa-exclamation-triangle"></i> Program with that name already exists.</div>
         <label for="progCatEd">College/School: </label>
         <button id="progCatSave" class="catSave edSave save"><i class="fa fa-floppy-o"></i> Update</button>
         <span class="edInp"><select type="text" id="progCatEd" class="catInp"></select></span>
-        <div id="progCatWarnEd" class="warn cat">College/school cannot be blank.</div>
+        <div id="progCatWarnEd" class="warn cat"><i class="fa fa-exclamation-triangle"></i> College/school cannot be blank.</div>
         <button class="u-full-width" data-type="col"><i class="fa fa-wrench"></i> Manage Colleges/Schools</button>
         <label for="progSiteEd">Website: </label>
         <button id="progSiteSave" class="siteSave edSave save"><i class="fa fa-floppy-o"></i> Update</button>
@@ -169,9 +186,10 @@
   <div id="topBar">
     <div id="topBarInner">
       <span style="color: #000; font-size: x-large; vertical-align: middle; display: inline; margin-right: 10px;" class="text">VIZ<span style="font-size:small; text-transform: lowercase; color: #66CCFF; margin-left: -5px">beta</span>Builder</span>
-      <button id="uploadNew"><i class="fa fa-file-o"></i> New Database</button>
-      <button id="view"><i class="fa fa-eye"></i> View Database</button>
-      <button id="download"><i class="fa fa-download"></i> Download Database</button>
+      <button id="uploadNew"><i class="fa fa-file-o"></i> New</button>
+      <button id="view"><i class="fa fa-eye"></i> View Source</button>
+      <button id="validate"><i class="fa fa-check"></i> Validate</button>
+      <button id="download"><i class="fa fa-download"></i> Download</button>
       <button id="preview"><i class="fa fa-laptop"></i> Preview</button>
     </div>
     <div id="menuToggle"><i class="fa fa-bars"></i></div>
@@ -191,11 +209,11 @@
         <h1 class="center"><span>Add a Course</span></h1>
         <label for="courseName">Name: </label>
         <input type="text" id="courseName" class="nameInp u-full-width"><br>
-        <div id="courseNameWarn1" class="warn name1">Name cannot be blank.</div>
-        <div id="courseNameWarn2" class="warn name2">Course with that name already exists.</div>
+        <div id="courseNameWarn1" class="warn name1"><i class="fa fa-exclamation-triangle"></i> Name cannot be blank.</div>
+        <div id="courseNameWarn2" class="warn name2"><i class="fa fa-exclamation-triangle"></i> Course with that name already exists.</div>
         <label for="courseCat">Course Category: </label>
         <select type="text" id="courseCat" class="catInp u-full-width"></select><br>
-        <div id="courseCatWarn" class="warn cat">Course Category cannot be blank.</div>
+        <div id="courseCatWarn" class="warn cat"><i class="fa fa-exclamation-triangle"></i> Course Category cannot be blank.</div>
         <button class="u-full-width" data-type="cat"><i class="fa fa-wrench"></i> Manage Categories</button>
         <label for="courseSite">Website: </label>
         <input type="text" id="courseSite" class="siteInp u-full-width"><br>
@@ -207,11 +225,11 @@
         <h1 class="center"><span>Add a Program</span></h1>
         <label for="progName">Name: </label>
         <input type="text" id="progName" class="nameInp u-full-width"><br>
-        <div id="progNameWarn1" class="warn name1">Name cannot be blank.</div>
-        <div id="progNameWarn2" class="warn name2">Program with that name already exists.</div>
+        <div id="progNameWarn1" class="warn name1"><i class="fa fa-exclamation-triangle"></i> Name cannot be blank.</div>
+        <div id="progNameWarn2" class="warn name2"><i class="fa fa-exclamation-triangle"></i> Program with that name already exists.</div>
         <label for="progCat">College/School: </label>
         <select type="text" id="progCat" class="catInp u-full-width"></select><br>
-        <div id="progCatWarn" class="warn cat">College/school cannot be blank.</div>
+        <div id="progCatWarn" class="warn cat"><i class="fa fa-exclamation-triangle"></i> College/school cannot be blank.</div>
         <button class="u-full-width" data-type="col"><i class="fa fa-wrench"></i> Manage Colleges/Schools</button>
         <label for="progSite">Website: </label>
         <input type="text" id="progSite" class="siteInp u-full-width"><br>
@@ -229,17 +247,17 @@
         <div id="propEdit1" class="one-half column">
           <label for="primCol">Primary Color: </label>
           <input type="text" id="primCol" class="primCol u-full-width"><br>
-          <div id="primColWarn1" class="warn pcol1">Primary color cannot be blank.</div>
-          <div id="primColWarn2" class="warn pcol2">Color code must begin with '#'.</div>
-          <div id="primColWarn3" class="warn pcol3">Color color code must be 3 or 6 characters long.</div>
+          <div id="primColWarn1" class="warn pcol1"><i class="fa fa-exclamation-triangle"></i> Primary color cannot be blank.</div>
+          <div id="primColWarn2" class="warn pcol2"><i class="fa fa-exclamation-triangle"></i> Color code must begin with '#'.</div>
+          <div id="primColWarn3" class="warn pcol3"><i class="fa fa-exclamation-triangle"></i> Color color code must be 3 or 6 characters long.</div>
           <label for="secCol">Secondary Color: </label>
           <input type="text" id="secCol" class="secCol u-full-width"><br>
-          <div id="secColWarn1" class="warn scol1">Secondary color cannot be blank.</div>
-          <div id="secColWarn2" class="warn scol2">Color code must begin with '#'.</div>
-          <div id="secColWarn3" class="warn scol3">Color color code must be 3 or 6 characters long.</div>
+          <div id="secColWarn1" class="warn scol1"><i class="fa fa-exclamation-triangle"></i> Secondary color cannot be blank.</div>
+          <div id="secColWarn2" class="warn scol2"><i class="fa fa-exclamation-triangle"></i> Color code must begin with '#'.</div>
+          <div id="secColWarn3" class="warn scol3"><i class="fa fa-exclamation-triangle"></i> Color color code must be 3 or 6 characters long.</div>
           <label for="defSite">Default Webpage for Links: </label>
           <input type="text" id="defSite" class="defSite u-full-width"><br>
-          <div id="siteWarn1" class="warn scol1">Default webpage cannot be blank.</div>
+          <div id="siteWarn1" class="warn defsite1"><i class="fa fa-exclamation-triangle"></i> Default webpage cannot be blank.</div>
           <label for="helpURL">Help page URL: </label>
           <input type="text" id="helpURL" class="helpURL u-full-width" input="#"><br>
           <label for="favURL">Favicon URL: </label>
