@@ -28,7 +28,9 @@ VIZ Builder has robust built-in data validation, but VIZ itself does not validat
 
 ## Saving changes in VIZ Builder
 
-As the prominent disclaimer says when you first load VIZ Builder, for security reasons, changes made in VIZ Builder do not affect the database file on your website used to generate the interface for VIZ. To save changes made in VIZ Builder, click "Download" in the top menu bar, which will initiate a download of the database in its current state to your local drive. Simply upload the downloaded file to the `/data` directory of VIZ on your website, and your changes will be made public. Prior to this, I recommended previewing the current database (click "Preview" in the top menu of VIZ Builder) to make sure your changes are correct.
+As the prominent disclaimer says when you first load VIZ Builder, for security reasons, changes made in VIZ Builder do not affect the database file on your website used to generate the interface for VIZ. To save changes made in VIZ Builder, click "Download" in the top menu bar, which will initiate a download of the database in its current state to your local drive. Then upload the downloaded file to the `/data` directory of VIZ on your website, and your changes will be made public.
+
+Before permanently replacing your existing database with an edited one, I suggest previewing the edited database (click "Preview" in the top menu of VIZ Builder) to make sure your changes are correct.
 
 # Example
 
