@@ -1,4 +1,4 @@
-##### What is VIZ?
+# What is VIZ?
 
 VIZ is a web-based presentation format for searching course requirements by program and program requirements by course. It is written in HTML, CSS, and Javascript, and all data loading, searching, and user interface behavior is handled by the browser, requiring very few resources from the server.
 
@@ -6,7 +6,7 @@ This directory also contains VIZ Builder, a GUI for managing the database used b
 
 Since VIZ automatically generates its user interface based on data provided by the content creator, VIZ can be customized and deployed by any academic unit at any institution wishing to communicate this kind of curricular information to their students.
 
-##### Installation
+# Installation
 
 Installing VIZ is simple:
 
@@ -18,12 +18,12 @@ Installing VIZ is simple:
     - Copy FileSaver.min.js to the /js folder of your VIZ directory
 3. Build your database using VIZ Builder
 
-##### Data management with VIZ Builder
+# Data management with VIZ Builder
 
 VIZ distributes with a correctly-structured blank database file (/data/vizDB.txt). A blank database can be generated at any time from VIZ Builder by selecting "Start New Database" and immediately downloading the current database.
 
 The content of the database is simple JSON, but manual editing is discouraged because of the potential for error. While VIZ Builder does have a robust data validation feature, but VIZ itself does not validate the database already existing on the server, and errors can break functionality for end users. Database output from VIZ Builder should always be correct if it is provided with a correctly-structured input database. For this reason, it is strongly encouraged to use VIZ Builder exclusively to make edits to the database, rather than manual editing.
 
-##### Example
+# Example
 
 To see an example of VIZ in action with a fully-developed database, upload /example/vizDB.txt to VIZ Builder and click "Preview".
