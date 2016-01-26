@@ -168,6 +168,32 @@
     addElement(parseInt(courseKey), progData[programKey]['appr']);
   }
   
+  // Duplicate a course or program
+  function duplicateElement(key, name, type) {
+    var elData = courseData;
+    var groupData = catData;
+    var oppData = progData;
+    if (type === 'prog') {
+      elData = progData;
+      groupData = colData;
+      oppData = courseData;
+    }
+    var newKey = metaData['curKey'];
+    metaData['curKey'] += 1;
+    groupData[elData[key]['cat']]['list'].push(newKey);
+    elData[newKey] = {
+      'name': name,
+      'cat': elData[key]['cat'],
+      'site': elData[key]['site'],
+      'appr': elData[key]['appr'].slice()
+    }
+    for (var i = 0; i < elData[newKey]['appr'].length; i++) {
+      var oppKey = elData[newKey]['appr'][i];
+      oppData[oppKey]['appr'].push(newKey);
+    }
+    return newKey;
+  }
+  
   // Remove an undirected edge between a program and course
   function removeEdge(courseKey, programKey) {
     if ($.inArray(programKey, courseData[courseKey]['appr']) === -1) {
@@ -411,6 +437,36 @@
     });
   }
   
+  // Define handlers for duplicate popup
+  function buildDup() {
+    var dup = $('div#duplicator');
+      dup.find('button#dupNameUpdate').click(function() {
+      dup.find('.warn').css('display', 'none');
+      var key = dup.attr('data-infocus');
+      var type = dup.attr('data-type');
+      var elData = courseData;
+      if (type === 'prog') {
+        elData = progData;
+      }
+      if (validName(dup, elData)) {
+        var newName = dup.find('input#dupRename').val();
+        var newKey = duplicateElement(key, newName, type);
+        createElement(newKey, type);
+        showSuccess();
+        removeElement('duplicator', zStack);
+        dup.fadeOut(300);
+        unfreeze();
+      } else {
+        dup.find('input#dupRename').val(elData[key]['name']);
+      }
+    });
+    dup.find('button#closeDup').click(function() {
+      removeElement('duplicator', zStack);
+      dup.fadeOut(300);
+      unfreeze();
+    });
+  }
+  
   // Build editor popups and define handlers
   function buildEdHandlers(editor, type) {
     editor.find('button.nameSave').unbind('click').click(function() {
@@ -434,6 +490,7 @@
         if (validName(editor, elData)){
           elData[key]['name'] = newName;
           header.text(newName);
+          setEdSize(type);
           listEl.attr('data-name', newName).find('span.nameTag').text(newName);
           listEdEl.attr('data-name', newName).text(newName);
           sortedAppend(listEl, $('div#' + type + 'List'), compareName);
@@ -621,9 +678,12 @@
       elData = progData;
       editor = $('div#progEditor');
     }
-    var newHTML = $('<div class="' + type + 'El"><div class="icons"><i class="fa fa-pencil edit">'
-            + '</i> <i class="fa fa-trash delete save"></i></div><span class="nameTag">'
-            + elData[key]['name'] + '</span></div>');
+    var newHTML = $('<div class="' + type + 'El"><div class="icons">'
+            + '<i class="fa fa-pencil edit" title="Edit ' + elData[key]['name'] + '">'
+            + '</i><i class="fa fa-files-o clone" title="Duplicate '
+            + elData[key]['name'] + '"></i> <i class="fa fa-trash delete save"'
+            + ' title="Delete ' + elData[key]['name'] + '"></i></div>'
+            + '<span class="nameTag">' + elData[key]['name'] + '</span></div>');
     newHTML.attr('data-key', key).attr('data-name', elData[key]['name']);
     newHTML.find('i.edit').click(function() {
       var name = newHTML.attr('data-name');
@@ -651,6 +711,17 @@
       shuffleZ();
       editor.fadeIn(300);
       setEdSize(type);
+    });
+    newHTML.find('i.clone').click(function() {
+      $('div#duplicator')
+            .attr('data-infocus', key)
+            .attr('data-type', type)
+            .fadeIn(300)
+            .find('h3#dupOld').text(elData[key]['name'])
+            .parent().find('input#dupRename')
+            .val(elData[key]['name']);
+      addElementLast('duplicator', zStack);
+      shuffleZ();
     });
     newHTML.find('i.delete').click(function() {
       var deleter = $('div#areUSure');
@@ -1345,6 +1416,9 @@
   
   // Build delete confirmation popup
   buildDelete();
+  
+  // Build duplication popup
+  buildDup();
   
   // Define window resize handler
   $(window).on('resize', setSizes);

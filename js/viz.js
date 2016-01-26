@@ -919,7 +919,9 @@ function buildVIZ(allData) {
   bgInitRand();
   
   // Start bg div rotation
-  setInterval(advanceBG, 30000);
+  if (metaData['bg'].length > 1) {
+    setInterval(advanceBG, 30000);
+  }
   
   // Collapse top menu on small screens
   if ($(window).width() <= 400) {

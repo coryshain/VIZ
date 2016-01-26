@@ -76,6 +76,20 @@
   </div>
 
   <!-- Delete category alert (appears if category still has elements assigned) -->
+  <div id="duplicator" class="popUp">
+    Duplicate the following?
+    <h3 id="dupOld"></h3>
+    <div id="dupRenamer">
+      <label for="dupRename">New Name (must be unique):</label>
+      <button id="dupNameUpdate" class="edSave save"><i class="fa fa-files-o"></i> Create Duplicate</button>
+      <span class="edInp"><input type="text" id="dupRename" class="nameInp"></span>
+      <div id="dupNameWarn1" class="name1 warn"><i class="fa fa-exclamation-triangle"></i> Name cannot be blank.</div>
+      <div id="dupNameWarn2" class="name2 warn"><i class="fa fa-exclamation-triangle"></i> That name already exists.</div>
+    </div>
+    <button id="closeDup" class="close"><i class="fa fa-times"></i> Close</button>
+  </div>
+
+  <!-- Delete category alert (appears if category still has elements assigned) -->
   <div id="deleteAlert" class="popUp">
     <div id="deleteMessage"></div>
     <div id="deleteList" class="list"></div>
@@ -143,6 +157,8 @@
         <label for="courseSiteEd">Website: </label>
         <button id="courseSiteSave" class="siteSave edSave save"><i class="fa fa-floppy-o"></i> Update</button>
         <span class="edInp"><input type="text" id="courseSiteEd" class="siteInp"></input></span>
+        <div class="edCatList">
+        </div>
         <label for="courseEditorList" class="list">Programs that accept <span id="courseEdLabel"></span>:</label>
       </div>
       <div id="courseEditorList" class="editorList"></div>
@@ -258,7 +274,7 @@
           <label for="defSite">Default Webpage for Links: </label>
           <input type="text" id="defSite" class="defSite u-full-width"><br>
           <div id="siteWarn1" class="warn defsite1"><i class="fa fa-exclamation-triangle"></i> Default webpage cannot be blank.</div>
-          <label for="helpURL">Help page URL: </label>
+          <label for="helpURL">Help Page URL: </label>
           <input type="text" id="helpURL" class="helpURL u-full-width" input="#"><br>
           <label for="favURL">Favicon URL: </label>
           <input type="text" id="favURL" class="favURL u-full-width" input="#"><br>

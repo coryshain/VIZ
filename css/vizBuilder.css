@@ -360,9 +360,6 @@ textarea {
 
 .icons i {
   margin-left: .5em;
-}
-
-.edit, .delete {
   display: inline-block;
   cursor: pointer;
 }
