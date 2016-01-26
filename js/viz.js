@@ -376,12 +376,8 @@ function buildVIZ(allData) {
     var wtHeader = $('<div id="wtHeader" class="collapsed"><b>What\'s this?</b></div>');
     var wtMsg = $('<div id="wtMsg"></div>');
     var wtText = 'Select <b>all</b> to display courses that can fulfill'
-          + ' requirements for all selected programs. This is best for exploring'
-          + ' sttudents. It helps determine how broadly a course will apply across'
-          + ' the programs at the university.<br><br> Select <b>any</b> to display'
-          + ' courses that can fulfill requirements for any of the selected programs.'
-          + ' This is best for students interested in a combined program. It helps '
-          + 'determine classes needed to fulfill all requirements.'
+          + ' requirements for all selected programs. Select <b>any</b> to display'
+          + ' courses that can fulfill requirements for any of the selected programs.';
     wtHeader.click(function() {
       if ($(this).hasClass('collapsed')) {
         $(this).next().slideDown(300);
@@ -792,7 +788,9 @@ function buildVIZ(allData) {
         if (i === metaData['bg'].length - 1) {
           $.get(metaData['bg'][i], function() {
             setTimeout(function() {
-              $('div#loading').fadeOut(400);
+              $('div#loading').fadeOut(400, function() {
+                $('div#splashAlert').fadeIn(300);
+              });
             }, 1500);
           });
         } else {
@@ -801,7 +799,9 @@ function buildVIZ(allData) {
       }
     } else {
       setTimeout(function() {
-        $('div#loading').fadeOut(400);
+        $('div#loading').fadeOut(400, function() {
+          $('div#splashAlert').fadeIn(300);
+        });
       }, 1500);
     }
   }
@@ -878,6 +878,9 @@ function buildVIZ(allData) {
   $('link#favicon').attr('href', metaData['favicon']);
   
   // Define global event handlers
+  $('div#splashAlert').click(function() {
+    $(this).fadeOut(300);
+  });
   $('div#paneToggler').click(toggleSearchPane);
   $('button#reset').click(resetAll);
   $('button#divide').click(groupItems);

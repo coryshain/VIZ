@@ -43,6 +43,56 @@
   -ms-transform: translate(-50%, -50%);
 }
 
+/* 1.c. General-purpose alert splash div */
+#splashAlert {
+  display: none;
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+  background-color: rgba(0, 0, 0, 0.9);
+  z-index: 3000;
+}
+
+#splashAlertIcon {
+  color: #FF0000;
+  font-size: 10vw;
+}
+
+#splashAlertContent {
+  position: absolute;
+  max-width: 500px;
+  top: 50%;
+  left: 50%;
+  color: #FFF;
+  font-size: 3vh;
+  text-align: center;
+  
+  transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+}
+
+#iunderstand {
+  border: 2px solid #FFF;
+  padding: 5px;
+  margin: 15px;
+  display: block;
+  cursor: pointer;
+  text-transform: uppercase;
+  
+  
+  border-radius: 4px;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -ms-border-radius: 4px;
+}
+
+#iunderstand:hover {
+  color: #000;
+  background-color: #FFF;
+}
+
 
 
 
@@ -348,6 +398,8 @@
 
 .displayCategory h2 {
   cursor: pointer;
+  -webkit-transition: color 0.3s;
+  transition: color 0.3s;
 }
 
 .displayCategory h2:hover {
@@ -368,12 +420,12 @@
 }
 
 .displayItem.active{
-  color: #444444;
+  color: #444;
   font-weight: bold;
 }
 
 .displayItem.active:hover {
-  color: #660000;
+  color: #000;
 }
 
 .ballot {

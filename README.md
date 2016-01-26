@@ -24,7 +24,7 @@ Installing VIZ is simple:
 
 VIZ distributes with a correctly-structured blank database file (`/data/vizDB.txt`). A blank database can be generated at any time from VIZ Builder by clicking "New" in the top menu bar, then "Start Blank Database". From there you can begin editing the database directly in VIZ Builder.
 
-VIZ Builder has robust built-in data validation, but VIZ itself does not validate the database already existing on the server, and errors can break functionality for end users. Because data is automatically validated on load, database output from VIZ Builder is guaranteed to be well-formed (though I've included a "Validate" button for the skeptical). For this reason, I strongly encourage using VIZ Builder to make edits to the database, rather than manual editing.
+VIZ Builder has robust built-in data validation, but VIZ itself does not validate the database already existing on the server, and errors can break functionality for end users. Because data is automatically validated on load, database output from VIZ Builder is guaranteed to be well-formed (though I've included a "Validate" button for the skeptical). For this reason, I strongly encourage using VIZ Builder to make edits to the database, rather than manually editing the (JSON) data file.
 
 ## Saving changes in VIZ Builder
 

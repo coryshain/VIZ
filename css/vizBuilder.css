@@ -54,7 +54,7 @@ textarea {
   -ms-transform: translate(-50%, -50%);
 }
 
-/* 2.b. Initial save alert splash div */
+/* 2.b. General-purpose alert splash div */
 #splashAlert {
   display: none;
   position: fixed;
