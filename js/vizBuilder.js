@@ -619,7 +619,10 @@
           } else {
             addEdge(target, key);
           }
-          $(this).addClass('selected');
+          $(this).addClass('selected')
+                .find('i.link')
+                .removeClass('fa-unlink')
+                .addClass('fa-link');
         });
       } else {
         $('div#' + type + 'EditorList').find('div.editorEl[data-visibility="1"]').each(function() {
@@ -629,7 +632,10 @@
           } else {
             removeEdge(target, key);
           }
-          $(this).removeClass('selected');
+          $(this).removeClass('selected')
+                .find('i.link')
+                .removeClass('fa-link')
+                .addClass('fa-unlink');;
         });
       }
       removeElement('linkConf', zStack);
