@@ -138,11 +138,14 @@
   
   <!-- Item delete confirmation dialog -->
   <div id="areUSure" class="popUp"><i class="fa fa-exclamation-triangle"></i> Are you sure you want to delete the <span id="toDeleteType"></span> <span id="toDelete"></span>? All approval links will be lost. This cannot be undone.<br><button id="yesSure" class="save">Delete</button> <button id="noSure">Cancel</button></div>
+
+  <!-- Bulk link confirmation dialog -->
+  <div id="linkConf" class="popUp"><i class="fa fa-exclamation-triangle"></i> Are you sure you want to <span id="linkAction"></span> approval links between <span id="linkTarget"></span> and all visible <span id="linkOppType"></span>? This cannot be undone.<br><button id="linkYes" class="save">Confirm</button> <button id="linkNo">Cancel</button></div>
   
   <!-- Course editor -->
   <div id="courseEditor" class="editor popUp">
     <h3 id="courseEdTitle">Placeholder</h3>
-    <div id="courseEdContainer">
+    <div id="courseEdContainer" class="edContainer">
       <div class="editHeaders">
         <label for="courseNameEd">Name: </label>
         <button id="courseNameSave" class="nameSave edSave save"><i class="fa fa-floppy-o"></i> Update</button>
@@ -151,7 +154,7 @@
         <div id="courseNameWarn2Ed" class="warn name2"><i class="fa fa-exclamation-triangle"></i> Course with that name already exists.</div>
         <label for="courseCatEd">Course Category: </label>
         <button id="courseCatSave" class="catSave edSave save"><i class="fa fa-floppy-o"></i> Update</button>
-        <span class="edInp"><select type="text" id="courseCatEd" class="catInp"></select></span>
+        <span class="edInp"><select type="text" id="courseCatEd" class="catInp courseCatInp"></select></span>
         <div id="courseCatWarnEd" class="warn cat"><i class="fa fa-exclamation-triangle"></i> Course Category cannot be blank.</div>
         <button class="u-full-width" data-type="cat"><i class="fa fa-wrench"></i> Manage Categories</button>
         <label for="courseSiteEd">Website: </label>
@@ -159,7 +162,16 @@
         <span class="edInp"><input type="text" id="courseSiteEd" class="siteInp"></input></span>
         <div class="edCatList">
         </div>
-        <label for="courseEditorList" class="list">Programs that accept <span id="courseEdLabel"></span>:</label>
+      </div>
+      <h4>
+        <span>Programs that accept </span>
+        <span id="courseEdLabel"></span>
+      </h4>
+      <label for="progCatFilter" class="filterLabel"><i class="fa fa-filter"></i><span> Filter: </span></label>
+      <span class="edInp"><select type="text" id="progCatFilter" class="catInp progCatInp"></select></span>
+      <div class="prog bulkLink">
+        <button id="courseLinkAll"><i class="fa fa-chain link"></i> Link All</button>
+        <button id="courseDelinkAll"><i class="fa fa-unlink link"></i> Delink All</button>
       </div>
       <div id="courseEditorList" class="editorList"></div>
     </div>
@@ -169,7 +181,7 @@
   <!-- Program editor -->
   <div id="progEditor" class="editor popUp">
     <h3 id="progEdTitle">Placeholder</h3>
-    <div id="progEdContainer">
+    <div id="progEdContainer" class="edContainer">
       <div class="editHeaders">
         <label for="progNameEd">Name: </label>
         <button id="progNameSave" class="nameSave edSave save"><i class="fa fa-floppy-o"></i> Update</button>
@@ -178,13 +190,22 @@
         <div id="progNameWarn2Ed" class="warn name2"><i class="fa fa-exclamation-triangle"></i> Program with that name already exists.</div>
         <label for="progCatEd">College/School: </label>
         <button id="progCatSave" class="catSave edSave save"><i class="fa fa-floppy-o"></i> Update</button>
-        <span class="edInp"><select type="text" id="progCatEd" class="catInp"></select></span>
+        <span class="edInp"><select type="text" id="progCatEd" class="catInp progCatInp"></select></span>
         <div id="progCatWarnEd" class="warn cat"><i class="fa fa-exclamation-triangle"></i> College/school cannot be blank.</div>
         <button class="u-full-width" data-type="col"><i class="fa fa-wrench"></i> Manage Colleges/Schools</button>
         <label for="progSiteEd">Website: </label>
         <button id="progSiteSave" class="siteSave edSave save"><i class="fa fa-floppy-o"></i> Update</button>
         <span class="edInp"><input type="text" id="progSiteEd" class="siteInp"></span>
-        <label for="progEditorList">Courses that are accepted by <span id="progEdLabel"></span>:</label>
+      </div>
+      <h4>
+        <span>Courses that are accepted by </span>
+        <span id="progEdLabel"></span>
+      </h4>
+      <label for="courseCatFilter" class="filterLabel"><i class="fa fa-filter"></i><span> Filter: </span></label>
+      <span class="edInp"><select type="text" id="courseCatFilter" class="catInp courseCatInp"></select></span>
+      <div class="prog bulkLink">
+        <button id="progLinkAll"><i class="fa fa-chain link"></i> Link All</button>
+        <button id="progDelinkAll"><i class="fa fa-unlink link"></i> Delink All</button>
       </div>
       <div id="progEditorList" class="editorList"></div>
     </div>
@@ -228,7 +249,7 @@
         <div id="courseNameWarn1" class="warn name1"><i class="fa fa-exclamation-triangle"></i> Name cannot be blank.</div>
         <div id="courseNameWarn2" class="warn name2"><i class="fa fa-exclamation-triangle"></i> Course with that name already exists.</div>
         <label for="courseCat">Course Category: </label>
-        <select type="text" id="courseCat" class="catInp u-full-width"></select><br>
+        <select type="text" id="courseCat" class="catInp courseCatInp u-full-width"></select><br>
         <div id="courseCatWarn" class="warn cat"><i class="fa fa-exclamation-triangle"></i> Course Category cannot be blank.</div>
         <button class="u-full-width" data-type="cat"><i class="fa fa-wrench"></i> Manage Categories</button>
         <label for="courseSite">Website: </label>
@@ -244,7 +265,7 @@
         <div id="progNameWarn1" class="warn name1"><i class="fa fa-exclamation-triangle"></i> Name cannot be blank.</div>
         <div id="progNameWarn2" class="warn name2"><i class="fa fa-exclamation-triangle"></i> Program with that name already exists.</div>
         <label for="progCat">College/School: </label>
-        <select type="text" id="progCat" class="catInp u-full-width"></select><br>
+        <select type="text" id="progCat" class="catInp progCatInp u-full-width"></select><br>
         <div id="progCatWarn" class="warn cat"><i class="fa fa-exclamation-triangle"></i> College/school cannot be blank.</div>
         <button class="u-full-width" data-type="col"><i class="fa fa-wrench"></i> Manage Colleges/Schools</button>
         <label for="progSite">Website: </label>

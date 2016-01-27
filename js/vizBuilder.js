@@ -288,7 +288,7 @@
   // Submit input data for new element creation and update input pane display
   function save(type, elData, catData) {
     var name = $('input#' + type + 'Name').val();
-    var cat = $('select#' + type + 'Cat').val();
+    var cat = parseInt($('select#' + type + 'Cat').val());
     var site = $('input#' + type + 'Site').val();
     var thisPane = $('div#' + type + 'Add');
     thisPane.find('div.warn').css('display', 'none');
@@ -513,8 +513,8 @@
         groupData = colData;
       }
       var key = parseInt(editor.attr('data-infocus'));
-      var catInp = $(this).parent().find('select.catInp');
-      var newCat = catInp.val();
+      var catInp = $(this).parent().find('select.' + type + 'CatEd');
+      var newCat = parseInt(catInp.val());
       $(this).next().next().css('display', 'none');
       if (!(newCat === elData[key]['cat'])) {
         if (validCat($(this).parent())) {
@@ -541,6 +541,100 @@
         elData[key]['site'] = newSite;
         showSuccess();
       }
+    });
+    $('select#' + opp[type] + 'CatFilter').change(function() {
+      var oppGroupData = colData;
+      if (type === 'prog') {
+        oppGroupData = catData;
+      }
+      var cat = $(this).val();
+      if (cat) {
+        $('div#' + type + 'EditorList').find('div.editorEl').each(function() {
+          if ($.inArray(parseInt($(this).attr('data-key')), oppGroupData[cat]['list']) > -1) {
+            $(this).css('display', 'block').attr('data-visibility', 1);
+          } else {
+            $(this).css('display', 'none').attr('data-visibility', 0);
+          }
+        });
+      } else {
+        $('div#' + type + 'EditorList').find('div.editorEl').each(function() {
+          $(this).css('display', 'block').attr('data-visibility', 1);
+        });
+      }
+    });
+    editor.find('button#' + type + 'LinkAll').click(function() {
+      var linkOppType = 'programs';
+      if (type === 'prog') {
+        linkOppType = 'courses';
+      }
+      addElement('linkConf', zStack);
+      shuffleZ();
+      $('div#linkConf')
+            .attr('data-infocus', parseInt(editor.attr('data-infocus')))
+            .attr('data-type', type)
+            .attr('data-actn', 'link')
+            .find('span#linkAction').text('add')
+            .parent().find('span#linkTarget').text(editor.find('h3#' + type + 'EdTitle').text())
+            .parent().find('span#linkOppType').text(linkOppType)
+            .parent().fadeIn(300);
+      $('div#freezeViewport').fadeIn(300);
+    });
+    editor.find('button#' + type + 'DelinkAll').click(function() {
+      var linkOppType = 'programs';
+      if (type === 'prog') {
+        linkOppType = 'courses';
+      }
+      addElement('linkConf', zStack);
+      shuffleZ();
+      $('div#linkConf')
+            .attr('data-infocus', parseInt(editor.attr('data-infocus')))
+            .attr('data-type', type)
+            .attr('data-actn', 'delink')
+            .find('span#linkAction').text('remove')
+            .parent().find('span#linkTarget').text(editor.find('h3#' + type + 'EdTitle').text())
+            .parent().find('span#linkOppType').text(linkOppType)
+            .parent().fadeIn(300);
+      $('div#freezeViewport').fadeIn(300);
+    });
+  }
+  
+  // Build bulk link confirmation dialog
+  function buildLink() {
+    var linkConf = $('div#linkConf');
+    linkConf.find('button#linkYes').click(function() {
+      var key = parseInt(linkConf.attr('data-infocus'));
+      var type = linkConf.attr('data-type');
+      var actn = linkConf.attr('data-actn');
+      var elData = courseData;
+      var oppData = progData;
+      if (type === 'prog') {
+        elData = progData;
+        oppData = courseData;
+      }
+      if (actn === 'link') {
+        $('div#' + type + 'EditorList').find('div.editorEl[data-visibility="1"]').each(function() {
+          var target = parseInt($(this).attr('data-key'));
+          if (type === 'course') {
+            addEdge(key, target);
+          } else {
+            addEdge(target, key);
+          }
+          $(this).addClass('selected');
+        });
+      } else {
+        $('div#' + type + 'EditorList').find('div.editorEl[data-visibility="1"]').each(function() {
+          var target = parseInt($(this).attr('data-key'));
+          if (type === 'course') {
+            removeEdge(key, target);
+          } else {
+            removeEdge(target, key);
+          }
+          $(this).removeClass('selected');
+        });
+      }
+      removeElement('linkConf', zStack);
+      linkConf.fadeOut(300);
+      unfreeze();
     });
   }
   
@@ -641,7 +735,7 @@
     }
     
     // Create new element in editor
-    var newEditorHTML = $('<div class="editorEl"><div class="edSave"><i class="fa fa-unlink link"></i></div> '
+    var newEditorHTML = $('<div class="editorEl" data-visibility="1"><div class="edSave"><i class="fa fa-unlink link"></i></div> '
             + elData[key]['name'] + '</div>');
     newEditorHTML.attr('data-key', key).attr('data-name', elData[key]['name']);
     newEditorHTML.click(function() {
@@ -686,6 +780,7 @@
             + '<span class="nameTag">' + elData[key]['name'] + '</span></div>');
     newHTML.attr('data-key', key).attr('data-name', elData[key]['name']);
     newHTML.find('i.edit').click(function() {
+      editor.find('select#' + opp[type] + 'CatFilter').val('').change();
       var name = newHTML.attr('data-name');
       var els = editor.find('div#' + type + 'EditorList').children();
       $('div#freezeViewport').fadeIn(300);
@@ -757,8 +852,9 @@
     var newOption = $('<option value="' + groupKey + '" data-name="'
           + groupData[groupKey]['name'] + '">'
           + groupData[groupKey]['name'] + '</option>');
-    sortedAppend(newOption, $('select#' + type + 'Cat'), compareName);
-    sortedAppend(newOption.clone(), $('select#' + type + 'CatEd'), compareName);
+    $('select.' + type + 'CatInp').each(function() {
+      sortedAppend(newOption.clone(), $(this), compareName);
+    });
     
     var newManagerItem = $('<div data-key="' + groupKey + '" data-name="'
           + groupData[groupKey]['name'] + '" class="manEl"></div>');
@@ -1011,6 +1107,11 @@
       removeElement('areUSure', zStack);
       unfreeze();
     });
+    $('button#linkNo').click(function (){
+      $('div#linkConf').fadeOut(300);
+      removeElement('linkConf', zStack);
+      unfreeze();
+    });
     $('button#view').click(function() {
       window.open('data:text/plain;charset=utf-8,' + escape(JSON.stringify(allData, null, 2)));
     });
@@ -1081,7 +1182,7 @@
   function setEdSize(type) {
     $('div#' + type + 'EdContainer').css('max-height', '');
     $('div#' + type + 'EdContainer').css('max-height', $('div#' + type + 'Editor').innerHeight()
-          - ($('h3#' + type + 'EdTitle').height() + $('button#' + type + 'EditClose').outerHeight() + 68));
+          - ($('h3#' + type + 'EdTitle').height() + $('button#' + type + 'EditClose').outerHeight() + 108));
   }
   
   // Set max-height of lists in manager popups
@@ -1414,11 +1515,14 @@
   // Initialize global click-event handlers
   setGlobClicks();
   
-  // Build delete confirmation popup
+  // Build delete confirmation dialog
   buildDelete();
   
-  // Build duplication popup
+  // Build duplication dialog
   buildDup();
+  
+  // Build bulk link confirmation dialog
+  buildLink();
   
   // Define window resize handler
   $(window).on('resize', setSizes);

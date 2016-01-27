@@ -179,9 +179,11 @@ function buildVIZ(allData) {
   function buildDisplayListGroup(groupKey, type) {
     var elData = courseData;
     var groupData = catData;
+    var sortOrder = compareCourse;
     if (type === 'prog') {
       elData = progData;
       groupData = colData;
+      sortOrder = compareProg;
     }
     var display = $('div#' + type + 'DisplayWrapper');
     
@@ -198,8 +200,9 @@ function buildVIZ(allData) {
     
     if (divide) {    
       var container = newGroup.find('div.displayCategoryContainer');
-    
-      for (var i = 0; i < groupData[groupKey]['list'].length; i++) {
+      var groupList = groupData[groupKey]['list'];
+      groupList.sort(sortOrder);
+      for (var i = 0; i < groupList.length; i++) {
         var website = elData[groupData[groupKey]['list'][i]]['site'];
         if (website.length === 0) {
           website = metaData['website'];
@@ -244,9 +247,9 @@ function buildVIZ(allData) {
   // Attach display item divs to their containers
   function attachDisplayItems(type, elData) {
     var display = $('div#' + type + 'DisplayWrapper');
-    var sort = compareCourse;
+    var sortOrder = compareCourse;
     if (type === 'prog') {
-      sort = compareProg;
+      sortOrder = compareProg;
     }
     if (divide) {
       display.find('.displayItem').each(function(){
@@ -264,7 +267,7 @@ function buildVIZ(allData) {
       display.find('.displayItem').each(function(){
         itemArray.push(parseInt($(this).attr('data-key')));
       });
-      itemArray.sort(sort);
+      itemArray.sort(sortOrder);
       var displayList = display.find('.displayList');
       for (var i = 0; i < itemArray.length; i++) {
         displayList.append($('a[data-key="'
@@ -314,13 +317,15 @@ function buildVIZ(allData) {
     var groupData = catData;
     var groupList;
     var groupName;
+    var sortOrder = compareCourse;
     if (type === 'prog') {
       elData = progData;
       groupData = colData;
       groupList = Object.keys(elData).sort(compareProg);
       groupName = 'Choose';
+      sortOrder = compareProg;
     } else {
-      groupList = groupData[groupKey]['list'].slice().sort(compareCourse);
+      groupList = groupData[groupKey]['list'].slice().sort(sortOrder);
       groupName = groupData[groupKey]['name'];
     }
 
