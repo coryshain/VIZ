@@ -122,7 +122,7 @@
       'colData': {},
       'metaData': {
         'col1': '#00CCFF',
-        'col2': '#0099FF',
+        'col2': '#0099CC',
         'curKey': 0,
         'website': 'https://github.com/coryshain/VIZ',
         'divide': true,

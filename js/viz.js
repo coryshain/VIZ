@@ -363,7 +363,7 @@ function buildVIZ(allData) {
               + '"><a href="' + website
               + '" target="_blank" class="searchLink">' + progData[groupList[i]]['name']
               + '</a></div>');
-        var ex = $('<div class="searchEx"><div class="exTextDiv col1"><i class="fa fa-times"></i></div></div>');
+        var ex = $('<div class="searchEx"><div class="exTextDiv"><i class="fa fa-times ballot"></i></div></div>');
         searchSelected.append(newSelected);
         newSelected.append(ex);
   

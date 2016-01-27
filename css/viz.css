@@ -198,11 +198,10 @@
 
 #invertSearch {
   display: block;
-  text-transform: lowercase;
-  font-variant: small-caps;
+  text-transform: uppercase;
   font-size: large;
   
-  color: #660000;
+  color: #4444;
   background-color: rgba(230, 230, 230, 1.0);
   
   font-weight: bold;
@@ -212,6 +211,7 @@
 }
 
 #invertSearch:hover {
+  color: #000;
   background-color: rgba(240, 240, 240, 1.0);
 }
 
@@ -308,7 +308,7 @@
 }
 
 .searchLink {
-  color: #444444;
+  color: #444;
   text-decoration: none;
   display: block;
   width: 100%;
