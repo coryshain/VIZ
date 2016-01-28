@@ -26,7 +26,11 @@
   <!-- Hidden elements, revealed as needed -->
   
   <!-- Loading screen -->
-  <div id="loading"><div id="loadingIcon"><i class="fa fa-circle-o-notch fa-spin"></i></div></div>
+  <div id="loading">
+    <div id="loadingIcon">
+      <i class="fa fa-circle-o-notch fa-spin"></i>
+    </div>
+  </div>
   
   <!-- Success screen -->
   <div id="success"><div id="successIcon">&#x2713; </div> Update successful.</div>
@@ -299,15 +303,17 @@
           <input type="text" id="helpURL" class="helpURL u-full-width" input="#"><br>
           <label for="favURL">Favicon URL: </label>
           <input type="text" id="favURL" class="favURL u-full-width" input="#"><br>
-        </div>
-        <div id="propEdit2" class="one-half column">
           <label for="email">Feedback Email: </label>
           <input type="text" id="email" class="email u-full-width" input="#"><br>
-          <label for="logoHTML">Logo HTML: </label>
-          <textarea id="logoHTML" class="u-full-width"></textarea>
-          <button class="u-full-width" data-type="bg"><i class="fa fa-wrench"></i> Manage Background Images</button>
           <input type="checkbox" id="divide"> Display groups by default</input><br>
           <input type="checkbox" id="searchByCourse"> Search by courses by default</input><br>
+        </div>
+        <div id="propEdit2" class="one-half column">
+          <label for="logoHTML">Logo HTML: </label>
+          <textarea id="logoHTML" class="u-full-width htmlEntry"></textarea>
+          <label for="welcomeHTML">Welcome Page HTML: </label>
+          <textarea id="welcomeHTML" class="u-full-width htmlEntry"></textarea>
+          <button class="u-full-width" data-type="bg"><i class="fa fa-wrench"></i> Manage Background Images</button>
         </div>
       </div>
       <button id="propSave" type="button" class="u-full-width save"><i class="fa fa-floppy-o"></i> Update</button><br><br>

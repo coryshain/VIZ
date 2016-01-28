@@ -128,6 +128,12 @@
         'divide': true,
         'searchByCourse': true,
         'logo': '',
+        'welcome': '<div style=\"font-size: 9vw; color: #444; line-height:'
+              + ' 100%\">Welcome to <span class=\"col1\" style=\"font-size:'
+              + '12vw; font-weight: bold;\"><span style=\"letter-spacing: '
+              + '-1.2vw;\">VI</span>Z</span></div>\n<div style=\"font-size:'
+              + ' 3vh; color: #666\">Visualize course requirements across '
+              + 'programs</div><br>',
         'bg': [],
         'help': '',
         'favicon': '',
@@ -373,6 +379,7 @@
     $('input#favURL').val(metaData['favicon']);
     $('input#email').val(metaData['email']);
     $('textarea#logoHTML').val(metaData['logo']);
+    $('textarea#welcomeHTML').val(metaData['welcome']);
     $('input#divide').prop('checked', metaData['divide']).click(function() {
       metaData['divide'] = $(this).prop('checked');
     });
@@ -1051,6 +1058,7 @@
         metaData['favicon'] = $('input#favURL').val();          
         metaData['email'] = $('input#email').val();          
         metaData['logo'] = parent.find('textarea#logoHTML').val();
+        metaData['welcome'] = parent.find('textarea#welcomeHTML').val();
         if (validSite(parent)) {
           metaData['website'] = parent.find('input#defSite').val();
         } else {
@@ -1234,22 +1242,26 @@
                       if (typeof db['metaData']['searchByCourse'] === 'boolean') {
                         if (validString(db['metaData']['website']) && db['metaData']['website'].length > 0) {
                           if (validString(db['metaData']['logo'])) {
-                            if (validArray(db['metaData']['bg'])) {
-                              if (validString(db['metaData']['help'])) {
-                                if (validString(db['metaData']['favicon'])) {
-                                  if (validString(db['metaData']['email'])) {
-                                    return true;
+                            if (validString(db['metaData']['welcome'])) {
+                              if (validArray(db['metaData']['bg'])) {
+                                if (validString(db['metaData']['help'])) {
+                                  if (validString(db['metaData']['favicon'])) {
+                                    if (validString(db['metaData']['email'])) {
+                                      return true;
+                                    } else {
+                                      console.log('\'email\' either missing or not a valid string.');
+                                    }
                                   } else {
-                                    console.log('\'email\' either missing or not a valid string.');
+                                    console.log('\'favicon\' either missing or not a valid string.');
                                   }
                                 } else {
-                                  console.log('\'favicon\' either missing or not a valid string.');
+                                  console.log('\'help\' either missing or not a valid string.');
                                 }
                               } else {
-                                console.log('\'help\' either missing or not a valid string.');
+                                console.log('\'bg\' either missing or not a valid array.');                
                               }
                             } else {
-                              console.log('\'bg\' either missing or not a valid array.');                
+                              console.log('\'welcome\' either missing or not a valid string.');
                             }
                           } else {
                             console.log('\'logo\' either missing or not a valid string.');

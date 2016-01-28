@@ -794,7 +794,14 @@ function buildVIZ(allData) {
           $.get(metaData['bg'][i], function() {
             setTimeout(function() {
               $('div#loading').fadeOut(400, function() {
-                $('div#splashAlert').fadeIn(300);
+                setTimeout(function() {
+                  var welcome = $('div#welcome');
+                  if (welcome.css('display') !== 'none') {
+                    $('div#welcome').fadeOut(700, function() {
+                      $('div#splashAlert').fadeIn(300);
+                    });
+                  }
+                }, 10000);
               });
             }, 1500);
           });
@@ -874,7 +881,12 @@ function buildVIZ(allData) {
   ///////////////////////////////////////
 
   // Insert logo
-  $('div.logo').html(metaData['logo']);
+  $('div.logo').each(function() {
+    $(this).html(metaData['logo']);
+  });
+  
+  // Insert welcome
+  $('div#welcomeCustom').html(metaData['welcome']);
 
   // Set link to help page
   $('a#help').attr('href', metaData['help']);
@@ -883,6 +895,11 @@ function buildVIZ(allData) {
   $('link#favicon').attr('href', metaData['favicon']);
   
   // Define global event handlers
+  $('div#welcome').click(function() {
+    $(this).fadeOut(700, function() {
+      $('div#splashAlert').fadeIn(300);
+    });
+  });
   $('div#splashAlert').click(function() {
     $(this).fadeOut(300);
   });
