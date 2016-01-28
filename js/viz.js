@@ -812,7 +812,14 @@ function buildVIZ(allData) {
     } else {
       setTimeout(function() {
         $('div#loading').fadeOut(400, function() {
-          $('div#splashAlert').fadeIn(300);
+          setTimeout(function() {
+            var welcome = $('div#welcome');
+            if (welcome.css('display') !== 'none') {
+              $('div#welcome').fadeOut(700, function() {
+                $('div#splashAlert').fadeIn(300);
+              });
+            }
+          }, 10000);
         });
       }, 1500);
     }

@@ -65,8 +65,29 @@
   -ms-transform: translate(-50%, -50%);
 }
 
+#continue {
+  color: #444;
+  background-color: #CCC;
+  padding: 5px;
+  margin: 15px;
+  display: block;
+  cursor: pointer;
+  font-size: 3vh;
+  text-transform: uppercase;
+  
+  border-radius: 4px;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -ms-border-radius: 4px;
+  
+  transition: color .2s, background-color .2s;
+  -moz-transition: color .2s, background-color .2s;
+  -webkit-transition: color .2s, background-color .2s;
+  -ms-transition: color .2s, background-color .2s;
+}
+
 #continue:hover {
-  color: #FFF;
+  color: #AAA;
   background-color: #444;
 }
 
@@ -108,11 +129,15 @@
   cursor: pointer;
   text-transform: uppercase;
   
-  
   border-radius: 4px;
   -moz-border-radius: 4px;
   -webkit-border-radius: 4px;
   -ms-border-radius: 4px;
+  
+  transition: color .2s, background-color .2s;
+  -moz-transition: color .2s, background-color .2s;
+  -webkit-transition: color .2s, background-color .2s;
+  -ms-transition: color .2s, background-color .2s;
 }
 
 #iunderstand:hover {
