@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="Skeleton-2.0.4/css/skeleton.css">
   <link rel="stylesheet" type="text/css" href="css/vizCore.css">
   <link rel="stylesheet" type="text/css" href="css/viz.css">
+  <style id="customCSS"></style>
 
 </head>
 <body>
@@ -27,7 +28,7 @@
   
   <!-- Initial loading screen -->
   <div id="loading">
-    <div id="loadingText">Loading <i class="fa fa-circle-o-notch fa-spin"></i></div>
+    <div id="loadingText" alt="Loading VIZ">Loading <i class="fa fa-circle-o-notch fa-spin"></i></div>
   </div>
   
   <!-- Welcome screen -->
@@ -35,7 +36,7 @@
     <div id="welcomeInner">
       <div id="welcomeCustom">
       </div>
-      <span id="continue">Continue</span>
+      <button tabindex="0" id="continue" alt="Continue to VIZ">Continue</button>
     </div>
   </div>
   
@@ -50,7 +51,7 @@
       </div>
       <div id="splashAlertText">
         VIZ is not a general-purpose degree-planning tool. Results do not take into account your individual academic record and simplify many requirements. <b>Always</b> consult with an advisor before scheduling.
-        <span id="iunderstand">I understand</span>
+        <button tabindex="0" id="iunderstand" alt="I understand and accept this disclaimer.">I understand</button>
       </div>
     </div>
   </div>
@@ -67,11 +68,11 @@
       <div id="topBar" class="bg-col2">
         <div id="topBarInner">
           <div class="logo"></div>
-          <button id="reset" class="option">Reset</button>
-          <button id="divide" class="option"><div id="showHideText"></div> <div id="divideText"></div></button>
+          <button id="reset" class="option" alt="Reset VIZ">Reset</button>
+          <button id="divide" class="option"><div id="showHideText" alt="Toggle display by groups on or off."></div> <div id="divideText"></div></button>
           <a href="#" id="help" target="_blank"><button class="option">Help</button></a>
         </div>
-        <div id="menuToggle"><i class="fa fa-bars"></i></div>
+        <div id="menuToggle" alt="Expand or collapse the menu bar."><i class="fa fa-bars"></i></div>
       </div>
       
       <!-- Search pane -->
@@ -94,13 +95,13 @@
               </div>
               
               <!-- Swap search button -->
-              <div id="invertSearch">Search By Program</div>
+              <button tabindex="0" id="invertSearch" alt="Invert the search direction between courses and programs.">Search By Program</button>
               
             </div>
           </div>
           
           <!-- Toggle button to expand/collapse search pane -->
-          <div id="paneToggler" class="bg-col2"><i class="fa fa-caret-up up"></i></div>
+          <button tabindex="0" id="paneToggler" class="bg-col2" alt="Expand or collapse the search pane."><i class="fa fa-caret-up up"></i></button>
           
         </div>
       </div>
@@ -119,7 +120,7 @@
             
             <!-- Course results display -->
             <div id="courseDisplayWrapper" class="displayWrapper">
-              <h1 class="displayHeader">
+              <h1 class="displayHeader" tabindex=0 alt="Click to expand/collapse all lists when display by group is active.">
                 <span>Courses </span>
                 <div class="collapser collapseAll">
                   <i class="fa fa-plus col1 plus"></i>
@@ -132,7 +133,7 @@
             
             <!-- Program results display -->
             <div id="progDisplayWrapper" class="displayWrapper">
-              <h1 class="displayHeader">
+              <h1 class="displayHeader" tabindex=0 alt="Click to expand/collapse all lists when display by group is active.">
                 <span>Programs </span>
                 <div class="collapser collapseAll">
                   <i class="fa fa-plus col1 plus"></i>
@@ -154,7 +155,7 @@
     <div id="feedbackTitle" class="bg-col2">Feedback?</div>
     <div id="feedbackContentWrapper">
       <div id="feedbackContent">Have feedback or questions?</div>
-      <a href="" id="feedbackEmail">Email us.</a>
+      <a href="" class="col1" id="feedbackEmail">Email us.</a>
     </div>
   </div>
 

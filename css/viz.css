@@ -68,12 +68,13 @@
 #continue {
   color: #444;
   background-color: #CCC;
-  padding: 5px;
   margin: 15px;
-  display: block;
   cursor: pointer;
   font-size: 3vh;
-  text-transform: uppercase;
+  width: 100%;
+  font-weight: normal;
+  border: 2px solid #FFF;
+  height: 1.75em;
   
   border-radius: 4px;
   -moz-border-radius: 4px;
@@ -122,12 +123,13 @@
 }
 
 #iunderstand {
+  color: #FFF;
+  width: 100%;
+  font-size: inherit;
+  font-weight: normal;
   border: 2px solid #FFF;
-  padding: 5px;
+  height: 1.75em;
   margin: 15px;
-  display: block;
-  cursor: pointer;
-  text-transform: uppercase;
   
   border-radius: 4px;
   -moz-border-radius: 4px;
@@ -159,14 +161,15 @@
 /* 2.a. Top bar */
 #topBar {
   width: 100%;
-  background-color: rgba(90, 90, 90, 1.0);
   text-align: center;
   z-index: 1001;
   color: #FFF;
 }
 
-#topBarInner {
-  padding-top: 10px;
+#topBarInner .logo, #topBarInner button {
+  margin-top: 5px;
+  margin-bottom: 0;
+  vertical-align: middle;
 }
 
 .option {
@@ -189,7 +192,6 @@
 
 .logo {
   display: inline-block;
-  vertical-align: middle;
 }
 
 #menuToggle {
@@ -198,7 +200,7 @@
   color: #EEE;
 }
 
-#menuToggle:hover{
+#menuToggle:hover, #menuToggle:focus {
   color: #FFF;
 }
 
@@ -250,36 +252,44 @@
 
 #invertSearch {
   display: block;
-  text-transform: uppercase;
+  width: 100%;
   font-size: large;
   
-  color: #4444;
+  color: #444;
   background-color: rgba(230, 230, 230, 1.0);
-  
+  border: none;
+  margin: 0;
   font-weight: bold;
-  padding: 3px;
-  text-align: center;
-  cursor: pointer;
+  
+  border-radius: 0;
+  -moz-border-radius: 0;
+  -webkit-border-radius: 0;
+  -ms-border-radius: 0;
 }
 
-#invertSearch:hover {
+#invertSearch:hover, #invertSearch:focus {
   color: #000;
   background-color: rgba(240, 240, 240, 1.0);
 }
 
 #paneToggler {
   display: block;
+  width: 100%;
   color: #EEE;
-  padding: 3px;
-  text-align: center;
-  cursor: pointer;
+  border: none;
+  margin: 0;
+
+  border-radius: 0;
+  -moz-border-radius: 0;
+  -webkit-border-radius: 0;
+  -ms-border-radius: 0;
 }
 
 #paneToggler i {
   font-size: xx-large;
 }
 
-#paneToggler:hover {
+#paneToggler:hover, #paneToggler:focus {
   color: #FFF;
 }
 
@@ -338,7 +348,7 @@
   overflow: hidden;
 }
 
-.searchSelItem:hover {
+.searchSelItem:hover, .searchSelItem:focus {
   background-color: rgba(240, 240, 240, 1.0);
 }
 
@@ -355,7 +365,7 @@
   cursor: pointer;
 }
 
-.searchEx:hover {
+.searchEx:hover, .searchEx:focus {
   background-color: rgba(180, 180, 180, 1.0);
 }
 
@@ -366,7 +376,7 @@
   width: 100%;
 }
 
-.searchLink:hover {
+.searchLink:hover, .searchLink:focus {
   color: #000;
 }
 
@@ -412,7 +422,6 @@
 #disclaimer {
   font-size: small;
   color: #FFF;
-  background-color: #E1E1E1;
     
   padding: 10px;
   margin-bottom: 1em;
@@ -427,7 +436,7 @@
   cursor: pointer;
 }
 
-.displayHeader:hover {
+.displayHeader:hover, .displayHeader:focus {
   color: #777777;
 }
 
@@ -452,7 +461,7 @@
   cursor: pointer;
 }
 
-.displayCategory h2:hover {
+.displayCategory h2:hover, .displayCategory h2:focus {
   color: #777777;
 }
 
@@ -467,7 +476,7 @@
   -ms-transition: letter-spacing 0.3s;
 }
 
-.displayItem:hover {
+.displayItem:hover, .displayItem:focus {
   color: #555;
   letter-spacing: 3px;
 }
@@ -477,7 +486,7 @@
   font-weight: bold;
 }
 
-.displayItem.active:hover {
+.displayItem.active:hover, .displayItem.active:focus {
   color: #000;
 }
 
@@ -567,19 +576,14 @@
 
 #feedbackTitle {
   color: #EEE;
-  background-color: rgba(90, 90, 90, 1.0);
   padding: 5px;
   font-weight: bold;
   display: block;
   cursor: pointer;
 }
 
-#feedbackTitle:hover {
+#feedbackTitle:hover, #feedbackTitle:focus {
   color: #FFF;
-}
-
-#feedbackTitle:hover {
-  background-color: rgba(70, 70, 70, 1.0);
 }
 
 #feedbackContentWrapper {

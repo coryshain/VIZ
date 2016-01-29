@@ -55,6 +55,14 @@ $.fn.animateRotate = function(startAngle, endAngle, duration){
     });
 };
 
+
+// Taken from a Stack Overflow post by user1505068 and modified
+function tabFocusRestrictor(lastItem,firstItem){
+    $(lastItem).blur(function(){
+        $(firstItem).focus();
+    });
+}
+
 // Taken from Mozilla article on browser detection
 function isMobile() {
   return /Mobi/i.test(navigator.userAgent);

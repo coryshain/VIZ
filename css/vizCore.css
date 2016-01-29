@@ -15,6 +15,11 @@ body {
 h1, h2, h3, h4 {
   color: #555555;
   text-transform: uppercase;
+  border: none;
+}
+
+h1:focus, h2:focus, h3:focus, h4:focus {
+  outline: none;
 }
 
 h1 span, h2 span, h3 span, h4 span {
@@ -24,4 +29,52 @@ h1 span, h2 span, h3 span, h4 span {
 .block {
   width: 100%;
   display: block;
+}
+
+.col1 {
+  color: #AAA;
+}
+
+.col1-light {
+  color: #CCC;
+}
+
+.col1-dark {
+  color: #777;
+}
+
+.col2 {
+  color: #444;
+}
+
+.col2-light {
+  color: #666;
+}
+
+.col2-dark {
+  color: #000;
+}
+
+.bg-col1 {
+  background-color: #AAA;
+}
+
+.bg-col1-light {
+  background-color: #CCC;
+}
+
+.bg-col1-dark {
+  background-color: #777;
+}
+
+.bg-col2 {
+  background-color: #444;
+}
+
+.bg-col2-light {
+  background-color: #666;
+}
+
+.bg-col2-dark {
+  background-color: #000;
 }

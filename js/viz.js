@@ -107,18 +107,20 @@ function buildVIZ(allData) {
   function processColors() {
     var col1 = metaData['col1'];
     var col2 = metaData['col2'];
-    $('.col1').css('color', col1);
-    $('.col1-dark').css('color', shadeBlendConvert(-0.5,col1));
-    $('.col1-light').css('color', shadeBlendConvert(0.5,col1));
-    $('.col2').css('color', col2);
-    $('.col2-dark').css('color', shadeBlendConvert(-0.5,col2));
-    $('.col2-light').css('color', shadeBlendConvert(0.5,col2));
-    $('.bg-col1').css('background-color', col1);
-    $('.bg-col1-dark').css('background-color', shadeBlendConvert(-0.5,col1));
-    $('.bg-col1-light').css('background-color', shadeBlendConvert(0.5,col1));
-    $('.bg-col2').css('background-color', col2);
-    $('.bg-col2-dark').css('background-color', shadeBlendConvert(-0.5,col2));
-    $('.bg-col2-light').css('background-color', shadeBlendConvert(0.5,col2));
+    var newCSS = '.col1 {color: ' + col1 + '}'
+          + '.col1-dark {color: ' + shadeBlendConvert(-0.5,col1) + '}'
+          + '.col1-light {color: ' + shadeBlendConvert(0.5,col1) + '}'
+          + '.col2 {color:' + col2 + '}'
+          + '.col2-dark {color: ' + shadeBlendConvert(-0.5,col2) + '}'
+          + '.col2-light {color: ' + shadeBlendConvert(0.5,col2) + '}'
+          + '.bg-col1 {background-color: ' + col1 + '}'
+          + '.bg-col1-dark {background-color: ' + shadeBlendConvert(-0.5,col1) + '}'
+          + '.bg-col1-light {background-color: ' + shadeBlendConvert(0.5,col1) + '}'
+          + '.bg-col2 {background-color: ' + col2 + '}'
+          + '.bg-col2-dark {background-color: ' + shadeBlendConvert(-0.5,col2) + '}'
+          + '.bg-col2-light {background-color: ' + shadeBlendConvert(0.5,col2) + '}'
+          
+    $('style#customCSS').text(newCSS);
   }
   
   
@@ -190,10 +192,14 @@ function buildVIZ(allData) {
     // Prevent orphaning of collapser by grouping it with last word
     var nameVector = groupData[groupKey]['name'].split(' ');
     var newGroup = $('<div class="displayCategory" data-key="' + groupKey + '">'
-          + '<h2 class="displayCategoryTitle"><span>' + nameVector.slice(0, -1).join(' ')
+          + '<h2 class="displayCategoryTitle" tabindex=0><span>'
+          + nameVector.slice(0, -1).join(' ')
           + ' </span></h2><div class="displayCategoryContainer"></div></div>');
-    var collapserGroup = $('<div class="collapserGroup"><span>' + nameVector.slice(-1) + ' </span></div>');
-    newGroup.find('h2.displayCategoryTitle').append(collapserGroup);
+    var collapserGroup = $('<div class="collapserGroup"><span>'
+          + nameVector.slice(-1) + ' </span></div>');
+    newGroup.find('h2.displayCategoryTitle')
+          .append(collapserGroup)
+          .attr('alt', 'Click to expand/collapse ' + groupData[groupKey]['name']);
     buildCollapser(collapserGroup);
     
     display.find('.displayList').append(newGroup);
@@ -221,8 +227,10 @@ function buildVIZ(allData) {
     if (type === 'prog') {
       elData = progData;
     }
-    var newItem = $('<a class="displayItem" href="' + href + '" target="_blank" data-key="'
-          + elKey + '">' + '<i class="fa fa-check check hide"></i>'
+    var newItem = $('<a class="displayItem" href="' + href
+          + '" target="_blank" data-key="'
+          + elKey + '" alt="' + elData[elKey]['name'] + ' is not approved">'
+          + '<i class="fa fa-check check hide"></i>'
           + '<i class="fa fa-times ballot"></i> '
           + elData[elKey]['name'] + '</a>');
           
@@ -235,12 +243,18 @@ function buildVIZ(allData) {
     var collapser = $('<div class="collapser"><i class="fa fa-plus col1 plus"></i>'
           + '<i class="fa fa-minus col1 minus"></i></div>');
     parent.append(collapser);
-    parent.parent().hover(function() {
-      $(this).find('i.col1').css('color', shadeBlendConvert(0.3, metaData['col1']))
-    }, function() {
-      $(this).find('i.col1').css('color', metaData['col1'])
-    }).click(function() {
-      toggleGroup($(this));
+    parent.parent().on('mouseover focusin', function() {
+      $(this).find('i.col1')
+          .addClass('col1-light')
+          .removeClass('col1');
+    }).on('mouseout focusout', function() {
+      $(this).find('i.col1-light')
+          .addClass('col1')
+          .removeClass('col1-light');
+    }).on('keypress click', function(e) {
+      if (e.which === 13 || e.type === 'click') {
+        toggleGroup($(this));
+      }
     });
   }
   
@@ -500,7 +514,8 @@ function buildVIZ(allData) {
     var display = $('div#' + type + 'DisplayWrapper');
     for (var i = 0; i < displayItems.length; i++) {
       var displayItemDiv = display.find('a[data-key="' + displayItems[i] + '"]');
-      displayItemDiv.addClass("active");
+      displayItemDiv.addClass("active")
+            .attr('alt', displayItemDiv.text() + ' is approved');
       displayItemDiv.find('i.ballot').addClass('hide');
       displayItemDiv.find('i.check').removeClass('hide');
     }
@@ -591,16 +606,16 @@ function buildVIZ(allData) {
 
   // Expand/collapse search pane
   function toggleSearchPane() {
-    var paneToggler = $('#paneToggler');
+    var paneToggler = $('button#paneToggler');
     if (paneToggler.hasClass('collapsed')) {
       $('div.searchWrapper.shown').slideDown(300);
-      $('div#invertSearch').slideDown(300);
+      $('button#invertSearch').slideDown(300);
       paneToggler
         .removeClass('collapsed')
         .children().first().animateRotate(180, 0, 200);
     } else {
       $('div.searchWrapper.shown').slideUp(300);
-      $('div#invertSearch').slideUp(300);
+      $('button#invertSearch').slideUp(300);
       paneToggler
         .addClass('collapsed')
         .children().first().animateRotate(0, 180, 200);
@@ -660,7 +675,7 @@ function buildVIZ(allData) {
             })
             .removeClass('shown');
     }
-    $('div#invertSearch').text(invertText);
+    $('button#invertSearch').text(invertText);
     $('div#divideText').text(groupName);
   }
 
@@ -691,7 +706,7 @@ function buildVIZ(allData) {
     if (searchByCourse !== metaData['searchByCourse']) {
       inverter();
     }
-    if ($('div#paneToggler').hasClass('collapsed')) {
+    if ($('button#paneToggler').hasClass('collapsed')) {
       toggleSearchPane();
     }
     $('div#displayViewport').animate({ scrollTop: 0 }, 300);
@@ -700,7 +715,7 @@ function buildVIZ(allData) {
   
   // Reset the search pane to initial state
   function resetSearch() {
-    $('select').val('');
+    $('select').val(-1);
     $('div#searchSelected').find('div.searchSelItem').each(function() {
       if ($(this).css('display') === 'block') {
         $(this).slideUp(300);
@@ -712,7 +727,8 @@ function buildVIZ(allData) {
   function resetDisplay(type) {
     $('div#' + type + 'DisplayWrapper').find('a.displayItem').each(function() {
       if ($(this).hasClass('active')) {
-        $(this).removeClass('active');
+        $(this).removeClass('active')
+              .attr('alt', $(this).text() + ' is not approved.');
         $(this).find('i.ballot').removeClass('hide');
         $(this).find('i.check').addClass('hide');
       }
@@ -737,8 +753,8 @@ function buildVIZ(allData) {
 
   // Dynamically set height of search viewport
   function setSearchHeight() {
-    var searchHeight = window.innerHeight - $('#topBar').outerHeight()
-          - $('#invertSearch').outerHeight() - $('div#paneToggler').outerHeight() - 20;
+    var searchHeight = window.innerHeight - $('div#topBar').outerHeight()
+          - $('button#invertSearch').outerHeight() - $('button#paneToggler').outerHeight() - 20;
     $('div#courseSearchWrapper').css('max-height', searchHeight);
     $('div#progSearchWrapper').css('max-height', searchHeight);
   }
@@ -754,7 +770,7 @@ function buildVIZ(allData) {
     var displayViewport = $('#displayViewport');
     var searchColumn = $('#searchColumn');
     var topBar = $('#topBar');
-    var paneToggler = $('#paneToggler');
+    var paneToggler = $('button#paneToggler');
     var type = 'prog';
     if (searchByCourse) {
       type = 'course';
@@ -783,7 +799,33 @@ function buildVIZ(allData) {
   //
   ///////////////////////////////////////
   
-  //Build and pre-load backgrounds
+  // Transition out of loading splash page
+  function loadingTrans() {
+    $('div#loading').fadeOut(400, function() {
+      var cont = $('button#continue');
+      cont.focus();
+      tabFocusRestrictor(cont, cont);
+      setTimeout(function() {
+        var welcome = $('div#welcome');
+        if (welcome.css('display') !== 'none') {
+          welcomeTrans();
+        }
+      }, 10000);
+    });
+  }
+  
+  // Transition out of welcome splash page
+  function welcomeTrans() {
+    $('div#welcome').fadeOut(700, function() {
+      $('div#splashAlert').fadeIn(300, function() {
+        var iunderstand = $('button#iunderstand');
+        iunderstand.focus();
+        tabFocusRestrictor(iunderstand);
+      });
+    });
+  }
+  
+  // Build and pre-load backgrounds
   function buildBG() {
     if (metaData['bg'].length > 0) {
       for (var i = 0; i < metaData['bg'].length; i++) {
@@ -792,36 +834,14 @@ function buildVIZ(allData) {
         $('div#bgContainer').append(newBG);
         if (i === metaData['bg'].length - 1) {
           $.get(metaData['bg'][i], function() {
-            setTimeout(function() {
-              $('div#loading').fadeOut(400, function() {
-                setTimeout(function() {
-                  var welcome = $('div#welcome');
-                  if (welcome.css('display') !== 'none') {
-                    $('div#welcome').fadeOut(700, function() {
-                      $('div#splashAlert').fadeIn(300);
-                    });
-                  }
-                }, 10000);
-              });
-            }, 1500);
+            setTimeout(loadingTrans, 1500);
           });
         } else {
           $.get(metaData['bg'][i]);
         }
       }
     } else {
-      setTimeout(function() {
-        $('div#loading').fadeOut(400, function() {
-          setTimeout(function() {
-            var welcome = $('div#welcome');
-            if (welcome.css('display') !== 'none') {
-              $('div#welcome').fadeOut(700, function() {
-                $('div#splashAlert').fadeIn(300);
-              });
-            }
-          }, 10000);
-        });
-      }, 1500);
+      setTimeout(loadingTrans, 1500);
     }
   }
   
@@ -887,6 +907,9 @@ function buildVIZ(allData) {
   //
   ///////////////////////////////////////
 
+  // Assign display colors programmatically
+  processColors();
+  
   // Insert logo
   $('div.logo').each(function() {
     $(this).html(metaData['logo']);
@@ -902,29 +925,35 @@ function buildVIZ(allData) {
   $('link#favicon').attr('href', metaData['favicon']);
   
   // Define global event handlers
-  $('div#welcome').click(function() {
-    $(this).fadeOut(700, function() {
-      $('div#splashAlert').fadeIn(300);
-    });
-  });
+  $('div#welcome').click(welcomeTrans)
+        .find('button#continue').click(welcomeTrans);
   $('div#splashAlert').click(function() {
     $(this).fadeOut(300);
+  }).find('button#iunderstand').click(function() {
+    $(this).fadeOut(300);
   });
-  $('div#paneToggler').click(toggleSearchPane);
+  $('button#paneToggler').click(toggleSearchPane);
   $('button#reset').click(resetAll);
   $('button#divide').click(groupItems);
-  $('div#invertSearch').click(inverter);
-  $('h1.displayHeader').hover(function() {
-    $(this).find('i.col1').css('color', shadeBlendConvert(0.3, metaData['col1']))
-  }, function() {
-    $(this).find('i.col1').css('color', metaData['col1'])
+  $('button#invertSearch').click(inverter);
+  $('h1.displayHeader').on('mouseover focusin', function() {
+    $(this).find('i.col1')
+          .addClass('col1-light')
+          .removeClass('col1');
+  }).on('mouseout focusout', function() {
+    $(this).find('i.col1-light')
+          .addClass('col1')
+          .removeClass('col1-light');
   });
-  $('h1.displayHeader').click(toggleGroups);
+  $('h1.displayHeader').on('keypress click', function(e) {
+    if (e.which === 13 || e.type === 'click') {
+      toggleGroups();
+    }
+  });
   $('div#feedbackTitle').click(function() {
     feedbackContainer = $('div#feedbackContainer');
     feedbackContent = $('div#feedbackContentWrapper');
     if (feedbackContainer.hasClass('collapsed')) {
-      console.log('expanding');
       feedbackContainer.removeClass('collapsed');
       feedbackContent.slideDown(200);
     } else {
@@ -936,10 +965,7 @@ function buildVIZ(allData) {
   $(window).on('resize', setSizes);
 
   // Build dynamic page content
-  buildAll();
-  
-  // Assign display colors programmatically
-  processColors();
+  buildAll(); 
   
   // Build background images
   buildBG();
