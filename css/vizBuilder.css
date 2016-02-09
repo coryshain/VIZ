@@ -153,7 +153,7 @@ textarea {
 }
 
 #courseEdContainer, #progEdContainer  {
-  overflow: auto;
+  overflow-y: auto;
 }
 
 .edInp {
@@ -188,6 +188,7 @@ textarea {
   float: left;
   margin-right: 10px;
   height: 38px;
+  line-height: 38px;
 }
 
 .bulkLink {
@@ -317,41 +318,6 @@ textarea {
 
 #courseListHeader:hover, #progListHeader:hover {
   color: #777;
-}
-
-.collapser {
-  position: relative;
-  display: inline-block;
-  height: 1em;
-  width: 1em;
-
-  vertical-align: middle;
-  text-align: center;
-  overflow: hidden;
-  z-index: 0;
-}
-
-.plus {
-  display: none;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  
-  transform: translate(-50%, -50%);
-  -moz-transform: translate(-50%, -50%);
-  -webkit-transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-}
-
-.minus {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  
-  transform: translate(-50%, -50%);
-  -moz-transform: translate(-50%, -50%);
-  -webkit-transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
 }
 
 

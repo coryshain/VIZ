@@ -57,10 +57,19 @@ $.fn.animateRotate = function(startAngle, endAngle, duration){
 
 
 // Taken from a Stack Overflow post by user1505068 and modified
-function tabFocusRestrictor(lastItem,firstItem){
-    $(lastItem).blur(function(){
-        $(firstItem).focus();
-    });
+function tabFocusRestrictor(firstItem,lastItem){
+  $(firstItem).on('keydown', function(e) {
+    if (e.which === 9 && e.shiftKey) {
+      e.preventDefault();
+      $(lastItem).focus();
+    }
+  });
+  $(lastItem).on('keydown', function(e){
+    if (e.which === 9 && !e.shiftKey) {
+      e.preventDefault();
+      $(firstItem).focus();
+    }
+  });
 }
 
 // Taken from Mozilla article on browser detection

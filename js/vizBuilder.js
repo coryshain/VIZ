@@ -431,7 +431,18 @@
         groupData = colData;
       }
       var key = parseInt($(this).parent().attr('data-todelete'));
-      $('div[data-key="' + key + '"]').detach();
+      $('div[data-key="' + key + '"]').each(function() {
+        if ($(this).parent().attr('id') === 'deleteList'
+            && !($(this).siblings().length > 0)) {
+          var deleteAlert = $('div#deleteAlert');
+          deleteAlert.find('div#deleteMsgErr').hide()
+                .parent().find('div#deleteMsgConf').show()
+                .parent().find('button.close').hide()
+                .parent().find('button.yes').show()
+                .parent().find('button.no').show();
+        }
+        $(this).detach();
+      });
       $('div#areUSure').fadeOut(300);
       removeElement('areUSure', zStack);
       unfreeze();
@@ -520,7 +531,7 @@
         groupData = colData;
       }
       var key = parseInt(editor.attr('data-infocus'));
-      var catInp = $(this).parent().find('select.' + type + 'CatEd');
+      var catInp = $(this).parent().find('select#' + type + 'CatEd');
       var newCat = parseInt(catInp.val());
       $(this).next().next().css('display', 'none');
       if (!(newCat === elData[key]['cat'])) {
@@ -549,25 +560,8 @@
         showSuccess();
       }
     });
-    $('select#' + opp[type] + 'CatFilter').change(function() {
-      var oppGroupData = colData;
-      if (type === 'prog') {
-        oppGroupData = catData;
-      }
-      var cat = $(this).val();
-      if (cat) {
-        $('div#' + type + 'EditorList').find('div.editorEl').each(function() {
-          if ($.inArray(parseInt($(this).attr('data-key')), oppGroupData[cat]['list']) > -1) {
-            $(this).css('display', 'block').attr('data-visibility', 1);
-          } else {
-            $(this).css('display', 'none').attr('data-visibility', 0);
-          }
-        });
-      } else {
-        $('div#' + type + 'EditorList').find('div.editorEl').each(function() {
-          $(this).css('display', 'block').attr('data-visibility', 1);
-        });
-      }
+    $('select#' + opp[type] + 'CatEdFilter').change(function() {
+      filter(editor.find('div.editLinks'), opp[type]);
     });
     editor.find('button#' + type + 'LinkAll').click(function() {
       var linkOppType = 'programs';
@@ -748,7 +742,7 @@
     }
     
     // Create new element in editor
-    var newEditorHTML = $('<div class="editorEl" data-visibility="1"><div class="edSave"><i class="fa fa-unlink link"></i></div> '
+    var newEditorHTML = $('<div class="editorEl el" data-visibility="1"><div class="edSave"><i class="fa fa-unlink link"></i></div> '
             + elData[key]['name'] + '</div>');
     newEditorHTML.attr('data-key', key).attr('data-name', elData[key]['name']);
     newEditorHTML.click(function() {
@@ -785,7 +779,7 @@
       elData = progData;
       editor = $('div#progEditor');
     }
-    var newHTML = $('<div class="' + type + 'El"><div class="icons">'
+    var newHTML = $('<div class="' + type + 'El el"><div class="icons">'
             + '<i class="fa fa-pencil edit" title="Edit ' + elData[key]['name'] + '">'
             + '</i><i class="fa fa-files-o clone" title="Duplicate '
             + elData[key]['name'] + '"></i> <i class="fa fa-trash delete save"'
@@ -793,7 +787,7 @@
             + '<span class="nameTag">' + elData[key]['name'] + '</span></div>');
     newHTML.attr('data-key', key).attr('data-name', elData[key]['name']);
     newHTML.find('i.edit').click(function() {
-      editor.find('select#' + opp[type] + 'CatFilter').val('').change();
+      editor.find('select#' + opp[type] + 'CatEdFilter').val('').change();
       var name = newHTML.attr('data-name');
       var els = editor.find('div#' + type + 'EditorList').children();
       $('div#freezeViewport').fadeIn(300);
@@ -898,20 +892,30 @@
       $('div#deleteList').text('');
       $(this).parent().parent().find('div.warn').css('display', 'none');
       if (groupData[groupKey]['list'].length == 0) {
-        delete groupData[groupKey];
-        $(this).parent().parent().detach();
-        $('option[value="' + groupKey + '"]').detach();
+        var deleteAlert = $('div#deleteAlert');
+        deleteAlert.attr({'data-infocus':groupKey, 'data-infocustype':groupType});
+        deleteAlert.find('span.catName').text(groupData[groupKey]['name']);
+        deleteAlert.find('div#deleteMsgErr').hide()
+              .parent().find('div#deleteMsgConf').show()
+              .parent().find('button.close').hide()
+              .parent().find('button.yes').show()
+              .parent().find('button.no').show();
+        deleteAlert.fadeIn(300);
       } else {
         for (var i = 0; i < groupData[groupKey]['list'].length; i++) {
           createElementDIV($('div#deleteList'), groupData[groupKey]['list'][i], type);
         }
-        var deleteAlert = '<i class="fa fa-exclamation-triangle"></i> ' + groupData[groupKey]['name']
-              + ' cannot be deleted since it has the following items assigned to it:';
-        $('div#deleteMessage').empty()
-              .append(deleteAlert);
+        var deleteAlert = $('div#deleteAlert');
+        deleteAlert.attr({'data-infocus':groupKey, 'data-infocustype':groupType});
+        deleteAlert.find('span.catName').text(groupData[groupKey]['name']);
+        deleteAlert.find('div#deleteMsgErr').show()
+              .parent().find('div#deleteMsgConf').hide()
+              .parent().find('button.close').show()
+              .parent().find('button.yes').hide()
+              .parent().find('button.no').hide();
         addElementLast('deleteAlert', zStack);
         shuffleZ();
-        $('div#deleteAlert').fadeIn(300);
+        deleteAlert.fadeIn(300);
         setDeleteAlertSize();
       }
     });
@@ -927,6 +931,29 @@
   //
   ///////////////////////////////////////
     
+  // Filter a list of ui elements by category
+  function filter(parent, type) {
+    var parent = $(parent);
+    var groupData = catData;
+    if (type === 'prog') {
+      groupData = colData;
+    }
+    var cat = parent.find('select.catInp').val();
+    if (cat) {
+      parent.find('div.el').each(function() {
+        if ($.inArray(parseInt($(this).attr('data-key')), groupData[cat]['list']) > -1) {
+          $(this).css('display', 'block').attr('data-visibility', 1);
+        } else {
+          $(this).css('display', 'none').attr('data-visibility', 0);
+        }
+      });
+    } else {
+      parent.find('div.el').each(function() {
+        $(this).css('display', 'block').attr('data-visibility', 1);
+      });
+    }
+  }
+  
   // Expand/collapse main display lists by type
   function expandCollapse(type) {
     var header = $('h2#courseListHeader');
@@ -934,12 +961,12 @@
       header = $('h2#progListHeader');
     }
     if (header.hasClass('collapsed')) {
-      $('div#' + type + 'List').fadeIn(300);
+      $('div#' + type + 'ListContainer').fadeIn(300);
       header.find('span.collapser').animateRotate(90, 0, 200);
       header.find('i.plus').fadeOut(300);
       header.removeClass('collapsed');
     } else {
-      $('div#' + type + 'List').fadeOut(300);
+      $('div#' + type + 'ListContainer').fadeOut(300);
       header.find('span.collapser').animateRotate(0, 90, 200);
       header.find('i.plus').fadeIn(300);
       header.addClass('collapsed');
@@ -1103,9 +1130,22 @@
       zStack = [];
     });
     
-    // Define Delete Alert close
-    $('button#closeDelAlert').click(function() {
+    // Define Delete Alert handlers
+    $('button#closeDelAlert, button#noDelAlert').click(function() {
       $(this).parent().fadeOut(300);
+      removeElement('deleteAlert', zStack);
+    });
+    $('button#yesDelAlert').click(function() {
+      var groupData = catData;
+      var groupType = $(this).parent().attr('data-infocustype');
+      var groupKey = $(this).parent().attr('data-infocus');
+      if (groupType === 'col') {
+        var groupData = colData;
+      }
+      delete groupData[groupKey];
+      $('div#' + groupType + 'List').find('div[data-key="' + groupKey + '"]').detach();
+      $('option[value="' + groupKey + '"]').detach();
+      $('div#deleteAlert').fadeOut(300);
       removeElement('deleteAlert', zStack);
     });
     
@@ -1169,6 +1209,16 @@
     $('h2#progListHeader').click(function() {
       expandCollapse('prog');
     });
+    
+    // Define filter handlers over main lists
+    $('select#courseCatFilter').change( function() {
+      filter($(this).parent().parent(), 'course');
+    });
+    $('select#progCatFilter').change( function() {
+      filter($(this).parent().parent(), 'prog');
+    });
+    
+    // Define handler for alert page
     $('div#splashAlert').click(function() {
       $(this).fadeOut(300, function() {$(this).find('div#splashAlertText').text('')});
       removeElement('splashAlert', zStack);
@@ -1189,7 +1239,8 @@
   function setDeleteAlertSize() {
     $('div#deleteList').css('max-height', '');
     $('div#deleteList').css('max-height', $('div#deleteAlert').innerHeight()
-            - ($('div#deleteMessage').outerHeight() + $('button#closeDelAlert').outerHeight() + 48));
+            - ($('div#deleteMsgErr').outerHeight() + $('div#deleteMsgConf').outerHeight()
+            + $('button#closeDelAlert').outerHeight() + 48));
   }
 
   // Set max-height of editor popup viewport

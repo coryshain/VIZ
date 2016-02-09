@@ -77,13 +77,13 @@ function buildVIZ(allData) {
   function buildAll() {
     var type = 'course';
     var oppType = 'prog';
-    $('div#divideText').text('Colleges');
+    $('span#divideText').text('Colleges');
     if (!searchByCourse) {
       type = 'prog';
       oppType = 'course';
-      $('div#divideText').text('Categories');
+      $('span#divideText').text('Categories');
     }
-    var showHideText = $('div#showHideText');
+    var showHideText = $('span#showHideText');
     if (divide) {
       showHideText.text('Hide');
     } else {
@@ -93,7 +93,20 @@ function buildVIZ(allData) {
     buildDisplay('prog', searchByCourse);
     buildSearch('prog', !searchByCourse);
     buildDisplay('course', !searchByCourse);
-    $('div#menuToggle').click(toggleMenu);
+    $('div#menuToggle')
+          .on('mouseenter focusin', function() {
+            $(this).removeClass('bg-col2')
+                  .addClass('bg-col2-dark');
+          })
+          .on('mouseleave focusout', function() {
+            $(this).removeClass('bg-col2-dark')
+                  .addClass('bg-col2');
+          })
+          .on('keypress click', function(e) {
+            if (e.which === 13 || e.type === 'click') {
+              toggleMenu();
+            }
+          });
 
     $('div#' + type + 'SearchWrapper')
           .css('display', 'block')
@@ -108,17 +121,18 @@ function buildVIZ(allData) {
     var col1 = metaData['col1'];
     var col2 = metaData['col2'];
     var newCSS = '.col1 {color: ' + col1 + '}'
-          + '.col1-dark {color: ' + shadeBlendConvert(-0.5,col1) + '}'
-          + '.col1-light {color: ' + shadeBlendConvert(0.5,col1) + '}'
+          + '.col1-dark {color: ' + shadeBlendConvert(-0.3,col1) + '}'
+          + '.col1-light {color: ' + shadeBlendConvert(0.3,col1) + '}'
           + '.col2 {color:' + col2 + '}'
-          + '.col2-dark {color: ' + shadeBlendConvert(-0.5,col2) + '}'
-          + '.col2-light {color: ' + shadeBlendConvert(0.5,col2) + '}'
+          + '.col2-dark {color: ' + shadeBlendConvert(-0.3,col2) + '}'
+          + '.col2-light {color: ' + shadeBlendConvert(0.3,col2) + '}'
           + '.bg-col1 {background-color: ' + col1 + '}'
-          + '.bg-col1-dark {background-color: ' + shadeBlendConvert(-0.5,col1) + '}'
-          + '.bg-col1-light {background-color: ' + shadeBlendConvert(0.5,col1) + '}'
+          + '.bg-col1-hov:hover, .bg-col1-hov:focus {background-color: ' + col1 + '}'
+          + '.bg-col1-dark {background-color: ' + shadeBlendConvert(-0.3,col1) + '}'
+          + '.bg-col1-light {background-color: ' + shadeBlendConvert(0.3,col1) + '}'
           + '.bg-col2 {background-color: ' + col2 + '}'
-          + '.bg-col2-dark {background-color: ' + shadeBlendConvert(-0.5,col2) + '}'
-          + '.bg-col2-light {background-color: ' + shadeBlendConvert(0.5,col2) + '}'
+          + '.bg-col2-dark {background-color: ' + shadeBlendConvert(-0.3,col2) + '}'
+          + '.bg-col2-light {background-color: ' + shadeBlendConvert(0.3,col2) + '}'
           
     $('style#customCSS').text(newCSS);
   }
@@ -227,12 +241,13 @@ function buildVIZ(allData) {
     if (type === 'prog') {
       elData = progData;
     }
-    var newItem = $('<a class="displayItem" href="' + href
-          + '" target="_blank" data-key="'
-          + elKey + '" alt="' + elData[elKey]['name'] + ' is not approved">'
+    var newItem = $('<span class="displayItem" data-key="'
+          + elKey + '" alt="' + elData[elKey]['name']
+          + ' is not approved"><a href="' + href
+          + '" target="_blank">'
           + '<i class="fa fa-check check hide"></i>'
           + '<i class="fa fa-times ballot"></i> '
-          + elData[elKey]['name'] + '</a>');
+          + elData[elKey]['name'] + '</a></span>');
           
     parent.append(newItem);
   }
@@ -243,11 +258,11 @@ function buildVIZ(allData) {
     var collapser = $('<div class="collapser"><i class="fa fa-plus col1 plus"></i>'
           + '<i class="fa fa-minus col1 minus"></i></div>');
     parent.append(collapser);
-    parent.parent().on('mouseover focusin', function() {
+    parent.parent().on('mouseenter focusin', function() {
       $(this).find('i.col1')
           .addClass('col1-light')
           .removeClass('col1');
-    }).on('mouseout focusout', function() {
+    }).on('mouseleave focusout', function() {
       $(this).find('i.col1-light')
           .addClass('col1')
           .removeClass('col1-light');
@@ -266,25 +281,25 @@ function buildVIZ(allData) {
       sortOrder = compareProg;
     }
     if (divide) {
-      display.find('.displayItem').each(function(){
+      display.find('span.displayItem').each(function(){
         $('div[data-key="' + elData[parseInt($(this).attr('data-key'))]['cat']
-              + '"]').find('.displayCategoryContainer').append($(this));
+              + '"]').find('div.displayCategoryContainer').append($(this));
       });
-      display.find('.displayCategory').each(function(){
+      display.find('div.displayCategory').each(function(){
           $(this).slideDown(300);
       });
     } else {
       var itemArray = []
-      display.find('.displayCategory').each(function(){
+      display.find('div.displayCategory').each(function(){
         $(this).slideUp(300);
       });
-      display.find('.displayItem').each(function(){
+      display.find('span.displayItem').each(function(){
         itemArray.push(parseInt($(this).attr('data-key')));
       });
       itemArray.sort(sortOrder);
-      var displayList = display.find('.displayList');
+      var displayList = display.find('div.displayList');
       for (var i = 0; i < itemArray.length; i++) {
-        displayList.append($('a[data-key="'
+        displayList.append($('span[data-key="'
               + itemArray[i] + '"]'));
       }
     }
@@ -513,7 +528,7 @@ function buildVIZ(allData) {
     }
     var display = $('div#' + type + 'DisplayWrapper');
     for (var i = 0; i < displayItems.length; i++) {
-      var displayItemDiv = display.find('a[data-key="' + displayItems[i] + '"]');
+      var displayItemDiv = display.find('span[data-key="' + displayItems[i] + '"]');
       displayItemDiv.addClass("active")
             .attr('alt', displayItemDiv.text() + ' is approved');
       displayItemDiv.find('i.ballot').addClass('hide');
@@ -594,11 +609,13 @@ function buildVIZ(allData) {
   function toggleMenu() {
     var menuToggler = $('div#menuToggle');
     if (menuToggler.hasClass('collapsed')) {
-      $('div#topBarInner').slideDown(200, setSizes);
+      setHeights(true);
+      $('div#topBarInner').slideDown(200);
       menuToggler
         .removeClass('collapsed');
     } else {
-      $('div#topBarInner').slideUp(200, setSizes);
+      setHeights(true);
+      $('div#topBarInner').slideUp(200);
       menuToggler
         .addClass('collapsed');
     }
@@ -625,11 +642,11 @@ function buildVIZ(allData) {
   // Toggle display by group on/off
   function groupItems() {
     if (divide) {
-      $('button#divide').find('div#showHideText').text('Show');
+      $('button#divide').find('span#showHideText').text('Show');
       $('div#courseDisplayWrapper').find('.collapseAll').fadeOut(300);
       $('div#progDisplayWrapper').find('.collapseAll').fadeOut(300);
     } else {
-      $('button#divide').find('div#showHideText').text('Hide');
+      $('button#divide').find('span#showHideText').text('Hide');
       $('div#courseDisplayWrapper').find('.collapseAll').fadeIn(300);
       $('div#progDisplayWrapper').find('.collapseAll').fadeIn(300);
     }
@@ -676,7 +693,7 @@ function buildVIZ(allData) {
             .removeClass('shown');
     }
     $('button#invertSearch').text(invertText);
-    $('div#divideText').text(groupName);
+    $('span#divideText').text(groupName);
   }
 
   
@@ -725,7 +742,7 @@ function buildVIZ(allData) {
   
   // Reset the display pane to initial state
   function resetDisplay(type) {
-    $('div#' + type + 'DisplayWrapper').find('a.displayItem').each(function() {
+    $('div#' + type + 'DisplayWrapper').find('span.displayItem').each(function() {
       if ($(this).hasClass('active')) {
         $(this).removeClass('active')
               .attr('alt', $(this).text() + ' is not approved.');
@@ -751,18 +768,46 @@ function buildVIZ(allData) {
   //
   ///////////////////////////////////////
 
-  // Dynamically set height of search viewport
-  function setSearchHeight() {
-    var searchHeight = window.innerHeight - $('div#topBar').outerHeight()
-          - $('button#invertSearch').outerHeight() - $('button#paneToggler').outerHeight() - 20;
-    $('div#courseSearchWrapper').css('max-height', searchHeight);
-    $('div#progSearchWrapper').css('max-height', searchHeight);
-  }
-  
-  // Dynamically set height of display viewport
-  function setDisplayHeight() {
-    var displayHeight = window.innerHeight - $('#topBar').outerHeight();
-    $('div#displayViewport').css('max-height', displayHeight);
+  // Dynamically set heights based on menu toggle state.
+  // Toggle parameter is boolean for whether or not
+  // call to setHeights was the result of a menu toggle event.
+  function setHeights(toggle) {
+    
+    var topBarInner = $('div#topBarInner');
+    var menuToggle = $('div#menuToggle');
+    var searchHt = window.innerHeight - $('button#invertSearch').outerHeight()
+            - menuToggle.outerHeight() - $('button#paneToggler').outerHeight() - 20;
+    var dispHt = window.innerHeight - menuToggle.outerHeight();
+    if (menuToggle.hasClass('collapsed') === toggle) {
+      if (toggle) {
+        topBarInner.css({'position':'absolute','visibility':'hidden','display':'block'});
+        var topBarHt = topBarInner.outerHeight();
+        topBarInner.css({'position':'static','visibility':'visible','display':'none'});
+      } else {
+        var topBarHt = topBarInner.outerHeight();
+      }
+      searchHt -= topBarHt;
+      dispHt -= topBarHt;
+    }
+    if (searchByCourse) {
+      if (toggle) {
+        $('div#courseSearchWrapper').animate({'max-height':searchHt}, 200);
+        $('div#displayViewport').animate({'max-height':dispHt}, 200);
+      } else {
+        $('div#courseSearchWrapper').css('max-height', searchHt);
+        $('div#displayViewport').css('max-height', dispHt);
+      }
+      $('div#progSearchWrapper').css('max-height', searchHt);
+    } else {
+      if (toggle) {
+        $('div#progSearchWrapper').animate({'max-height':searchHt}, 200);
+        $('div#displayViewport').animate({'max-height':dispHt}, 200);
+      } else {
+        $('div#progSearchWrapper').css('max-height', searchHt);
+        $('div#displayViewport').css('max-height', dispHt);
+      }
+      $('div#courseSearchWrapper').css('max-height', searchHt);
+    }
   }
   
   // Dynamically set sizes for all affected UI elements
@@ -785,8 +830,7 @@ function buildVIZ(allData) {
       }
     }
     
-    setSearchHeight();
-    setDisplayHeight();
+    setHeights(false);
   }
 
 
@@ -820,7 +864,7 @@ function buildVIZ(allData) {
       $('div#splashAlert').fadeIn(300, function() {
         var iunderstand = $('button#iunderstand');
         iunderstand.focus();
-        tabFocusRestrictor(iunderstand);
+        tabFocusRestrictor(iunderstand, iunderstand);
       });
     });
   }
@@ -917,30 +961,36 @@ function buildVIZ(allData) {
   
   // Insert welcome
   $('div#welcomeCustom').html(metaData['welcome']);
-
-  // Set link to help page
-  $('a#help').attr('href', metaData['help']);
   
   // Set favicon
   $('link#favicon').attr('href', metaData['favicon']);
   
   // Define global event handlers
-  $('div#welcome').click(welcomeTrans)
-        .find('button#continue').click(welcomeTrans);
-  $('div#splashAlert').click(function() {
-    $(this).fadeOut(300);
-  }).find('button#iunderstand').click(function() {
-    $(this).fadeOut(300);
+  $('button#continue').click(welcomeTrans);
+  $('button#iunderstand').click(function() {
+    $('div#splashAlert').fadeOut(300);
   });
-  $('button#paneToggler').click(toggleSearchPane);
+  $('button#paneToggler')
+        .on('mouseenter focusin', function() {
+          $(this).removeClass('bg-col2')
+                .addClass('bg-col2-dark');
+        })
+        .on('mouseleave focusout', function() {
+          $(this).removeClass('bg-col2-dark')
+                .addClass('bg-col2');
+        })
+        .click(toggleSearchPane);
   $('button#reset').click(resetAll);
   $('button#divide').click(groupItems);
+  $('button#help').click(function() {
+    window.open(metaData['help'], '_blank');
+  });
   $('button#invertSearch').click(inverter);
-  $('h1.displayHeader').on('mouseover focusin', function() {
+  $('h1.displayHeader').on('mouseenter focusin', function() {
     $(this).find('i.col1')
           .addClass('col1-light')
           .removeClass('col1');
-  }).on('mouseout focusout', function() {
+  }).on('mouseleave focusout', function() {
     $(this).find('i.col1-light')
           .addClass('col1')
           .removeClass('col1-light');
@@ -950,17 +1000,26 @@ function buildVIZ(allData) {
       toggleGroups();
     }
   });
-  $('div#feedbackTitle').click(function() {
-    feedbackContainer = $('div#feedbackContainer');
-    feedbackContent = $('div#feedbackContentWrapper');
-    if (feedbackContainer.hasClass('collapsed')) {
-      feedbackContainer.removeClass('collapsed');
-      feedbackContent.slideDown(200);
-    } else {
-      feedbackContainer.addClass('collapsed');
-      feedbackContent.slideUp(200);
-    }
-  });
+  $('button#feedbackTitle')
+        .on('mouseenter focusin', function() {
+          $(this).removeClass('bg-col2')
+                 .addClass('bg-col2-dark');
+        })
+        .on('mouseleave focusout', function() {
+          $(this).removeClass('bg-col2-dark')
+                 .addClass('bg-col2');
+        })
+        .click(function() {
+          feedbackContainer = $('div#feedbackContainer');
+          feedbackContent = $('div#feedbackContentWrapper');
+          if (feedbackContainer.hasClass('collapsed')) {
+            feedbackContainer.removeClass('collapsed');
+            feedbackContent.slideDown(200);
+          } else {
+            feedbackContainer.addClass('collapsed');
+            feedbackContent.slideUp(200);
+          }
+        });
   $('a#feedbackEmail').attr('href', 'mailto:' + metaData['email']);
   $(window).on('resize', setSizes);
 

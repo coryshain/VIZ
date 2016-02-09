@@ -95,9 +95,12 @@
 
   <!-- Delete category alert (appears if category still has elements assigned) -->
   <div id="deleteAlert" class="popUp">
-    <div id="deleteMessage"></div>
+    <div id="deleteMsgErr"><span class="catName"></span> cannot be deleted since it has the following items assigned to it:</div>
+    <div id="deleteMsgConf">Are you sure you want to delete <span class="catName"></span>?</div>
     <div id="deleteList" class="list"></div>
     <button id="closeDelAlert" class="close"><i class="fa fa-times"></i> Close</button>
+    <button id="yesDelAlert" class="yes"><i class="fa fa-check"></i> Yes</button>
+    <button id="noDelAlert" class="no"><i class="fa fa-times"></i> No</button>
   </div>
   
   <!-- Course category manager -->
@@ -167,17 +170,19 @@
         <div class="edCatList">
         </div>
       </div>
-      <h4>
-        <span>Programs that accept </span>
-        <span id="courseEdLabel"></span>
-      </h4>
-      <label for="progCatFilter" class="filterLabel"><i class="fa fa-filter"></i><span> Filter: </span></label>
-      <span class="edInp"><select type="text" id="progCatFilter" class="catInp progCatInp"></select></span>
-      <div class="prog bulkLink">
-        <button id="courseLinkAll"><i class="fa fa-chain link"></i> Link All</button>
-        <button id="courseDelinkAll"><i class="fa fa-unlink link"></i> Delink All</button>
+      <div class="editLinks">
+        <h4>
+          <span>Programs that accept </span>
+          <span id="courseEdLabel"></span>
+        </h4>
+        <label for="progCatEdFilter" class="filterLabel"><i class="fa fa-filter"></i><span> Filter: </span></label>
+        <span class="edInp"><select type="text" id="progCatEdFilter" class="catInp progCatInp"></select></span>
+        <div class="prog bulkLink">
+          <button id="courseLinkAll"><i class="fa fa-chain link"></i> Link All</button>
+          <button id="courseDelinkAll"><i class="fa fa-unlink link"></i> Delink All</button>
+        </div>
+        <div id="courseEditorList" class="editorList"></div>
       </div>
-      <div id="courseEditorList" class="editorList"></div>
     </div>
     <button id="courseEditClose" type="button" class="close"><i class="fa fa-times"></i> Close</button>
   </div>
@@ -201,17 +206,19 @@
         <button id="progSiteSave" class="siteSave edSave save"><i class="fa fa-floppy-o"></i> Update</button>
         <span class="edInp"><input type="text" id="progSiteEd" class="siteInp"></span>
       </div>
-      <h4>
-        <span>Courses that are accepted by </span>
-        <span id="progEdLabel"></span>
-      </h4>
-      <label for="courseCatFilter" class="filterLabel"><i class="fa fa-filter"></i><span> Filter: </span></label>
-      <span class="edInp"><select type="text" id="courseCatFilter" class="catInp courseCatInp"></select></span>
-      <div class="prog bulkLink">
-        <button id="progLinkAll"><i class="fa fa-chain link"></i> Link All</button>
-        <button id="progDelinkAll"><i class="fa fa-unlink link"></i> Delink All</button>
+      <div class="editLinks">
+        <h4>
+          <span>Courses that are accepted by </span>
+          <span id="progEdLabel"></span>
+        </h4>
+        <label for="courseCatEdFilter" class="filterLabel"><i class="fa fa-filter"></i><span> Filter: </span></label>
+        <span class="edInp"><select type="text" id="courseCatEdFilter" class="catInp courseCatInp"></select></span>
+        <div class="prog bulkLink">
+          <button id="progLinkAll"><i class="fa fa-chain link"></i> Link All</button>
+          <button id="progDelinkAll"><i class="fa fa-unlink link"></i> Delink All</button>
+        </div>
+        <div id="progEditorList" class="editorList"></div>
       </div>
-      <div id="progEditorList" class="editorList"></div>
     </div>
     <button id="progEditClose" type="button" class="close"><i class="fa fa-times"></i> Close</button>
   </div>
@@ -327,23 +334,41 @@
     <div class="row">
       <div class="one-half column">
         <h2 id="courseListHeader" class="center">
-          <span>Course List </span>
-          <span class="collapser">
-            <i class="fa fa-minus minus"></i>
-            <i class="fa fa-plus plus"></i>
+          <span>
+            <span>Course </span>
+            <div class="collapserGroup">
+              <span>List</span>
+              <div class="collapser">
+                <i class="fa fa-minus minus"></i>
+                <i class="fa fa-plus plus"></i>
+              </div>
+            </div>
           </span>
         </h2>
-        <div id="courseList"></div>
+        <div id="courseListContainer">
+          <label for="courseCatFilter" class="filterLabel"><i class="fa fa-filter"></i><span> Filter: </span></label>
+          <span class="edInp"><select type="text" id="courseCatFilter" class="catInp courseCatInp"></select></span>
+          <div id="courseList"></div>
+        </div>
       </div>
       <div class="one-half column">
         <h2 id="progListHeader" class="center">
-          <span>Program List </span>
-          <span class="collapser">
-            <i class="fa fa-minus minus"></i>
-            <i class="fa fa-plus plus"></i>
+          <span>
+            <span>Program </span>
+            <div class="collapserGroup">
+              <span>List </span>
+              <div class="collapser">
+                <i class="fa fa-minus minus"></i>
+                <i class="fa fa-plus plus"></i>
+              </div>
+            </div>
           </span>
         </h2>
-        <div id="progList"></div>
+        <div id="progListContainer">
+          <label for="progCatFilter" class="filterLabel"><i class="fa fa-filter"></i><span> Filter: </span></label>
+          <span class="edInp"><select type="text" id="progCatFilter" class="catInp progCatInp"></select></span>
+          <div id="progList"></div>
+        </div>
       </div>
     </div>
   </div>
