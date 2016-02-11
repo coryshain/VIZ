@@ -569,7 +569,6 @@
         linkOppType = 'courses';
       }
       addElement('linkConf', zStack);
-      shuffleZ();
       $('div#linkConf')
             .attr('data-infocus', parseInt(editor.attr('data-infocus')))
             .attr('data-type', type)
@@ -579,6 +578,7 @@
             .parent().find('span#linkOppType').text(linkOppType)
             .parent().fadeIn(300);
       $('div#freezeViewport').fadeIn(300);
+      shuffleZ();
     });
     editor.find('button#' + type + 'DelinkAll').click(function() {
       var linkOppType = 'programs';
@@ -586,7 +586,6 @@
         linkOppType = 'courses';
       }
       addElement('linkConf', zStack);
-      shuffleZ();
       $('div#linkConf')
             .attr('data-infocus', parseInt(editor.attr('data-infocus')))
             .attr('data-type', type)
@@ -596,6 +595,7 @@
             .parent().find('span#linkOppType').text(linkOppType)
             .parent().fadeIn(300);
       $('div#freezeViewport').fadeIn(300);
+      shuffleZ();
     });
   }
   
@@ -810,8 +810,8 @@
         }
       }
       addElementLast(editor.attr('id'), zStack);
-      shuffleZ();
       editor.fadeIn(300);
+      shuffleZ();
       setEdSize(type);
     });
     newHTML.find('i.clone').click(function() {
@@ -833,12 +833,12 @@
       }
       $('div#freezeViewport').fadeIn(300);
       addElementLast(deleter.attr('id'), zStack);
-      shuffleZ();
       deleter
           .attr('data-todelete', key)
           .fadeIn(300)
           .find('span#toDelete')
           .text(elData[key]['name']);
+      shuffleZ();
       deleter.find('span#toDeleteType').text(typeName);
     });
     sortedAppend(newHTML, parent, compareName);
@@ -914,8 +914,8 @@
               .parent().find('button.yes').hide()
               .parent().find('button.no').hide();
         addElementLast('deleteAlert', zStack);
-        shuffleZ();
         deleteAlert.fadeIn(300);
+        shuffleZ();
         setDeleteAlertSize();
       }
     });
@@ -976,8 +976,8 @@
   // Reveal manager popup
   function revealManager(type) {
     addElementLast(type + 'Manage', zStack);
-    shuffleZ();
     $('div#' + type + 'Manage').fadeIn(300);
+    shuffleZ();
     setManSize(type);
     $('div#freezeViewport').fadeIn(300);
   }
@@ -1003,6 +1003,13 @@
       $('#' + zStack[i]).css('z-index', top);
       top--;
     }
+    var focusSet = $('#' + zStack[zStack.length -1])
+          .find('button, input, select, a');
+    console.log(zStack);
+    console.log($('#' + zStack[zStack.length -1]));
+    console.log(focusSet.length);
+    focusSet.first().focus();
+    tabFocusRestrictor(focusSet.first(), focusSet.last());
   }
   
   // Expand/collapse top menue
@@ -1152,8 +1159,8 @@
     // Define top menu button behaviors
     $('button#uploadNew').click(function() {
       addElementLast('uploadDB', zStack);
-      shuffleZ();
       $('div#uploadDB').fadeIn(300);
+      shuffleZ();
       $('div#freezeViewport').fadeIn(300);
     });
     $('button#noSure').click(function (){
@@ -1173,9 +1180,9 @@
       if (validDB(allData)) {
         if (validData(allData)) {
           addElementLast('allGood', zStack);
-          shuffleZ();
           $('div#allGood').fadeIn(300);
           $('div#freezeViewport').fadeIn(300);
+          shuffleZ();
         }
       } else {
         $('div#splashAlertText').text('Problems found. The database is' 
@@ -1188,9 +1195,9 @@
     });
     $('button#download').click(function() {
       addElementLast('downloadConf', zStack);
-      shuffleZ();
       $('div#freezeViewport').fadeIn(300);
       $('div#downloadConf').fadeIn(300);
+      shuffleZ();
     });
     $('button#downloadYes').click(function() {
       var dataBlob = new Blob([JSON.stringify(allData)], {type: "application/json;charset=utf-8"});
@@ -1599,9 +1606,9 @@
   
   //Show initial database dialog
   addElementLast('uploadDB', zStack);
-  shuffleZ();
   $('div#uploadDB').fadeIn(300);
   $('div#freezeViewport').fadeIn(300);
+  shuffleZ();
 
   // Dynamically set display sizes
   setSizes();

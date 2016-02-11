@@ -389,17 +389,24 @@ function buildVIZ(allData) {
           website = metaData['website'];
         }
         var newSelected = $('<div class="searchSelItem" data-key="' + groupList[i] 
-              + '"><a href="' + website
+              + '" + data-selected="0"><a href="' + website
               + '" target="_blank" class="searchLink">' + progData[groupList[i]]['name']
               + '</a></div>');
-        var ex = $('<div class="searchEx"><div class="exTextDiv"><i class="fa fa-times ballot"></i></div></div>');
+        var ex = $('<div class="searchEx" tabindex="0"><div class="exTextDiv"><i class="fa fa-times ballot"></i></div></div>');
         searchSelected.append(newSelected);
         newSelected.append(ex);
   
-        ex.click({key: groupList[i]}, function(event) {
-          var key = event.data.key;
-          removeSelected(key);
-        });
+        ex
+          .on('keypress click', {key: groupList[i]}, function(e) {
+            if (e.which === 13 || e.type === 'click') {
+              if ($(this).parent().prevAll('[data-selected="1"]').length) {
+                $(this).parent().prev().find('div.searchEx').focus();
+              } else {
+                $('select.Choose').focus();
+              }
+              removeSelected(e.data.key);
+            }
+          });
       }
     }
   }
@@ -474,11 +481,13 @@ function buildVIZ(allData) {
       }
       search.find('div.searchSelItem').each(function() {
         if ($.inArray(parseInt($(this).data('key')), searchItemsSelected) == -1) {
-          if (!($(this).css('display') === 'none')) {
+          if ($(this).attr('data-selected') === '1') {
+            $(this).attr('data-selected', 0);
             $(this).slideUp(300);
           }
         } else {
-          if ($(this).css('display') === 'none')  {
+          if ($(this).attr('data-selected') === '0') {
+            $(this).attr('data-selected', 1);
             $(this).slideDown(300);
           }
         }
@@ -734,7 +743,8 @@ function buildVIZ(allData) {
   function resetSearch() {
     $('select').val(-1);
     $('div#searchSelected').find('div.searchSelItem').each(function() {
-      if ($(this).css('display') === 'block') {
+      if ($(this).attr('data-selected') === '1') {
+        $(this).attr('data-selected', 0);
         $(this).slideUp(300);
       }
     });

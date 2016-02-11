@@ -34,4 +34,6 @@ Before permanently replacing your existing database with an edited one, I sugges
 
 # Example
 
-To see an example of VIZ in action with a fully-developed database, upload `/example/vizDB.txt` to VIZ Builder and click "Preview".
+Live working examples of these tools include http://go.osu.edu/viz (for VIZ) and http://go.osu.edu/vizBuilder (for VIZ Builder).
+
+To see an example of VIZ in action on your own server with a fully-developed database, upload `/example/vizDB.txt` to VIZ Builder and click "Preview".
