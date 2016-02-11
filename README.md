@@ -1,6 +1,6 @@
 # What is VIZ?
 
-VIZ is a web-based presentation format for displaying course requirements by academic program and program requirements by course. It is written in HTML, CSS, and JavaScript, and all data loading, searching, and user interface behavior is handled by the browser, requiring very few resources from the server.
+VIZ is a web-based presentation format for displaying relationships between courses and academic programs within an institution or department. Unlike the more familiar curriculum guides, "bingo" sheets, and degree audits (which VIZ is designed to supplement), VIZ allows users to quickly determine how broadly a course or set of courses can apply across a variety of programs under consideration. It is written in HTML, CSS, and JavaScript, and all data loading, searching, and user interface behavior is handled by the browser, requiring very few resources from the server.
 
 This directory also contains VIZ Builder, a GUI for managing the database used by VIZ to display course requirements. VIZ Builder allows admistrators a great deal of freedom in customizing the information displayed in VIZ, as well as some control over display parameters like color and logo. VIZ Builder allows non-technical users to manage and update VIZ quickly and easily.
 
