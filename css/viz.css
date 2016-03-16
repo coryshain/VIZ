@@ -502,17 +502,17 @@ body {
   outline: none;
 }
 
-.displayItem a:hover, .displayItem a:focus {
-  color: #333;
+.displayItem:hover a, .displayItem a:focus {
+  color: #444;
   letter-spacing: 3px;
 }
 
-.displayItem.active{
-  color: #444;
+.displayItem.active a{
+  color: #555;
   font-weight: bold;
 }
 
-.displayItem.active:hover a, .displayItem.active:focus a {
+.displayItem.active:hover a, .displayItem.active a:focus {
   color: #000;
 }
 

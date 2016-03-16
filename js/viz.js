@@ -399,8 +399,9 @@ function buildVIZ(allData) {
         ex
           .on('keypress click', {key: groupList[i]}, function(e) {
             if (e.which === 13 || e.type === 'click') {
-              if ($(this).parent().prevAll('[data-selected="1"]').length) {
-                $(this).parent().prev().find('div.searchEx').focus();
+              var activeList = $(this).parent().prevAll('[data-selected="1"]');
+              if (activeList.length) {
+                activeList.first().find('div.searchEx').focus();
               } else {
                 $('select.Choose').focus();
               }
@@ -1030,7 +1031,7 @@ function buildVIZ(allData) {
             feedbackContent.slideUp(200);
           }
         });
-  $('a#feedbackEmail').attr('href', 'mailto:' + metaData['email']);
+  $('a#feedbackEmail').attr('href', 'mailto:' + metaData['email'] + '?subject=VIZ%20Feedback');
   $(window).on('resize', setSizes);
 
   // Build dynamic page content

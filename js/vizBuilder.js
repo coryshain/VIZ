@@ -258,8 +258,10 @@
   // Update name of existing group
   function updateGroupName(groupKey, type) {
     var groupData = catData;
+    var elType = 'course';
     if (type === 'col') {
       groupData = colData;
+      elType = 'prog';
     }
     var parent = $('div#' + type + 'List')
           .find('div[data-key="' + groupKey + '"]');
@@ -269,7 +271,7 @@
     if (!(newVal === oldVal)) {
       if (validCatAdd(newVal, type, parent)) {
         groupData[groupKey]['name'] = newVal;
-        $('select#' + type + 'Cat')
+        $('select#' + elType + 'Cat')
               .find('option[value="' + groupKey + '"]').text(newVal);
         showSuccess();
       } else {
@@ -498,7 +500,7 @@
         groupData = colData;
       }
       var key = parseInt(editor.attr('data-infocus'));
-      var header = editor.find('h3#' + type + 'EdTitle');
+      var headers = editor.find('h3#' + type + 'EdTitle, span#' + type + 'EdLabel');
       var listEl = $('div#' + type + 'List').find('div[data-key="' + key + '"]');
       var listEdEl = $('div#' + opp[type] + 'EditorList').find('div[data-key="' + key + '"]');
       var nameInp = $(this).parent().find('input.nameInp');
@@ -507,7 +509,7 @@
       if (!(newName === elData[key]['name'])) {
         if (validName(editor, elData)){
           elData[key]['name'] = newName;
-          header.text(newName);
+          headers.text(newName);
           setEdSize(type);
           listEl.attr('data-name', newName).find('span.nameTag').text(newName);
           listEdEl.attr('data-name', newName).text(newName);
@@ -900,7 +902,9 @@
               .parent().find('button.close').hide()
               .parent().find('button.yes').show()
               .parent().find('button.no').show();
+        addElementLast('deleteAlert', zStack);
         deleteAlert.fadeIn(300);
+        shuffleZ();
       } else {
         for (var i = 0; i < groupData[groupKey]['list'].length; i++) {
           createElementDIV($('div#deleteList'), groupData[groupKey]['list'][i], type);
@@ -1005,9 +1009,6 @@
     }
     var focusSet = $('#' + zStack[zStack.length -1])
           .find('button, input, select, a');
-    console.log(zStack);
-    console.log($('#' + zStack[zStack.length -1]));
-    console.log(focusSet.length);
     focusSet.first().focus();
     tabFocusRestrictor(focusSet.first(), focusSet.last());
   }
