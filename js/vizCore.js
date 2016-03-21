@@ -83,6 +83,64 @@ function isMobile() {
 
 ///////////////////////////////////////
 //
+// Animations
+//
+///////////////////////////////////////
+
+// Swap 2 elements and animate the change
+function swap(x, y, duration, callback) {
+  x = $(x);
+  var posx = x.position();
+  y = $(y);
+  var posy = y.position();
+
+  var xtmp = x.clone()
+              .css({
+                'position': 'absolute',
+                'width': x.width(),
+                'height': x.height(),
+                'top': posx.top,
+                'left': posx.left
+              });
+  var ytmp = y.clone()
+              .css({
+                'position': 'absolute',
+                'width': y.width(),
+                'height': y.height(),
+                'top': posy.top,
+                'left': posy.left
+              });
+
+  x.before(xtmp);
+  y.before(ytmp);
+  x.css('visibility', 'hidden');
+  y.css('visibility', 'hidden');
+  xtmp.after(y);
+  ytmp.after(x);
+  
+  xtmp.animate({
+    top: posy.top,
+    left: posy.left,
+  }, duration, function() {
+    $(this).detach();
+    x.css('visibility', 'visible');
+  });
+  ytmp.animate({
+    top: posx.top,
+    left: posx.left,
+  }, duration, function() {
+    $(this).detach();
+    y.css('visibility', 'visible');
+    typeof callback === 'function' && callback();
+  });
+}
+
+
+
+  
+
+///////////////////////////////////////
+//
 // Array manipulation
 //
 ///////////////////////////////////////
@@ -118,6 +176,13 @@ function addElement(element, array) {
   if ($.inArray(element, array) === -1) {
     array.push(element);
   }
+}
+
+// Swap two elements in an array.
+function swapElements(A, i, j) {
+  var tmp = A[i];
+  A[i] = A[j];
+  A[j] = tmp;
 }
 
 // Add an element to an array.

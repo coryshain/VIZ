@@ -252,7 +252,21 @@
     }
     groupPop(key, type);
     groupPush(key, type, groupKey);
+    var oldGroupKey = elData[key]['cat']
     elData[key]['cat'] = groupKey;
+    
+    var deleteAlert = $('div#deleteAlert');
+    if (parseInt(deleteAlert.attr('data-infocus')) === oldGroupKey) {
+      deleteAlert.find('div.progEl[data-key="' + key + '"]').detach();
+      if (groupData[oldGroupKey]['list'].length === 0) {
+        var deleteAlert = $('div#deleteAlert');
+        deleteAlert.find('div#deleteMsgErr').hide()
+              .parent().find('div#deleteMsgConf').show()
+              .parent().find('button.close').hide()
+              .parent().find('button.yes').show()
+              .parent().find('button.no').show();
+      }
+    }
   }
   
   // Update name of existing group
@@ -312,7 +326,7 @@
     $('input#' + type + 'Name').val('');
     $('select#' + type + 'Cat').val('');
     $('input#' + type + 'Site').val('');
-    createElement(key, type);
+    createElement(key, type, true);
     showSuccess();
   }
   
@@ -336,7 +350,6 @@
       } else {
         metaData['bg'].push(newVal);
         createBG(newVal);
-        setManSize(type);
         manInput.val('');
         showSuccess();
       }
@@ -348,7 +361,6 @@
       groupData[key] = {'name': newVal, 'list': []};
       metaData['curKey'] += 1;
       createGroup(key, elType);
-      setManSize(type);
       manInput.val('');
       showSuccess();
     }
@@ -443,7 +455,9 @@
                 .parent().find('button.yes').show()
                 .parent().find('button.no').show();
         }
-        $(this).detach();
+        $(this).slideUp(200, function() {
+          $(this).detach();
+        });
       });
       $('div#areUSure').fadeOut(300);
       removeElement('areUSure', zStack);
@@ -471,7 +485,7 @@
       if (validName(dup, elData)) {
         var newName = dup.find('input#dupRename').val();
         var newKey = duplicateElement(key, newName, type);
-        createElement(newKey, type);
+        createElement(newKey, type, true);
         showSuccess();
         removeElement('duplicator', zStack);
         dup.fadeOut(300);
@@ -512,7 +526,7 @@
           headers.text(newName);
           setEdSize(type);
           listEl.attr('data-name', newName).find('span.nameTag').text(newName);
-          listEdEl.attr('data-name', newName).text(newName);
+          listEdEl.attr('data-name', newName).find('span.editorElLabel').text(newName);
           sortedAppend(listEl, $('div#' + type + 'List'), compareName);
           sortedAppend(listEdEl, $('div#' + opp[type] + 'EditorList'), compareName);
           showSuccess();
@@ -698,38 +712,52 @@
         + url + '" class="manEl"><span class="edInp"><button><a href="' + url
         + '" target="_blank" class="block">' + url + '</a></button></span></div>');
     var buttonContainer = $('<div class="edSave"></div>');
-    var newItemDel = $('<div class="subSave"><i class="fa fa-trash delete save"></i></div>');
-    var newUp = $('<div class="up move subSave"><i class="fa fa-caret-up"></i></div>');
-    var newDown = $('<div class="down move subSave"><i class="fa fa-caret-down"></i></div>');
+    var newItemDel = $('<div class="subSave" title="Delete"><i class="fa fa-trash delete save"></i></div>');
+    var newUp = $('<div class="up move subSave" title="Move up"><i class="fa fa-caret-up"></i></div>');
+    var newDown = $('<div class="down move subSave" title="Move down"><i class="fa fa-caret-down"></i></div>');
     buttonContainer.append(newUp).append(newDown).append(newItemDel);
     newUp.click(function() {
       if (newManagerItem.prev().length > 0) {
-        newManagerItem.prev().before(newManagerItem);
+        swap(newManagerItem, newManagerItem.prev(), 200);
         var idx = $.inArray(url, metaData['bg']);
-        metaData['bg'].splice(idx, 1);
-        metaData['bg'].splice(idx - 1, 0, url);
+        swapElements(metaData['bg'], idx, idx - 1);
+      } else {
+        var lastOne = newManagerItem.nextAll().last();
+        swap(newManagerItem, lastOne, 300);
+        swapElements(metaData['bg'], 0, metaData['bg'].length - 1);
       }
     });
     newDown.click(function() {
       if (newManagerItem.next().length > 0){
-        newManagerItem.next().after(newManagerItem);
+        swap(newManagerItem, newManagerItem.next(), 200);
         var idx = $.inArray(url, metaData['bg']);
-        metaData['bg'].splice(idx, 1);
-        metaData['bg'].splice(idx + 1, 0, url);
+        swapElements(metaData['bg'], idx, idx + 1);
+      } else {
+        var firstOne = newManagerItem.prevAll().last();
+        swap(newManagerItem, firstOne, 300);
+        swapElements(metaData['bg'], 0, metaData['bg'].length - 1);
       }
     });
-    
+        
     $('div#bgList').append(newManagerItem);
-    newManagerItem.prepend(buttonContainer)
+    newManagerItem.prepend(buttonContainer);
+    setManSize('bg');
+    newManagerItem.hide().slideDown(200);
     newItemDel.click(function() {
       $(this).parent().parent().find('div.warn').css('display', 'none');
       metaData['bg'].splice($.inArray(url, metaData['bg']), 1);
-      newManagerItem.detach();
+      var tmp = newManagerItem.next();
+      if (tmp.length === 0) {
+        tmp = newManagerItem.prev();
+      }
+      newManagerItem.slideUp(200, function(){
+        newManagerItem.detach();
+      });
     });
   }
   
   // Create DB element and all associated UI elements from key
-  function createElement(key, type) {
+  function createElement(key, type, anim) {
     var parent = $('div#' + type + 'List');
     var editor = $('div#' + type + 'Editor');
     var oppEditor = $('div#' + opp[type] + 'Editor');
@@ -745,7 +773,7 @@
     
     // Create new element in editor
     var newEditorHTML = $('<div class="editorEl el" data-visibility="1"><div class="edSave"><i class="fa fa-unlink link"></i></div> '
-            + elData[key]['name'] + '</div>');
+            + '<span class="editorElLabel">' + elData[key]['name'] + '</span></div>');
     newEditorHTML.attr('data-key', key).attr('data-name', elData[key]['name']);
     newEditorHTML.click(function() {
       var target = parseInt($('div#' + opp[type] + 'Editor').attr('data-inFocus'));
@@ -770,11 +798,11 @@
     sortedAppend(newEditorHTML, oppEditorList, compareName);
     
     // Create new element in main list
-    createElementDIV(parent, key, type);
+    createElementDIV(parent, key, type, anim);
   }
   
   // Create new element DIV in parent from key
-  function createElementDIV(parent, key, type) {
+  function createElementDIV(parent, key, type, anim) {
     var elData = courseData;
     var editor = $('div#courseEditor');
     if (type === 'prog') {
@@ -844,6 +872,9 @@
       deleter.find('span#toDeleteType').text(typeName);
     });
     sortedAppend(newHTML, parent, compareName);
+    if (anim) {
+        newHTML.hide().slideDown(200);
+    }
   }
 
   // Create group and all associated UI elements from key
@@ -872,8 +903,8 @@
     newInputSpan.append(newItemInput);
     newItemInput.val(groupData[groupKey]['name']);
     var newButtonContainer = $('<div class="edSave save"></div>');
-    var newItemSave = $('<div class="subSave"><i class="fa fa-floppy-o"></i></div>');
-    var newItemDel = $('<div class="subSave"><i class="fa fa-trash delete save"></i></div>');
+    var newItemSave = $('<div class="subSave" title="Save name"><i class="fa fa-floppy-o"></i></div>');
+    var newItemDel = $('<div class="subSave" title="Delete"><i class="fa fa-trash delete save"></i></div>');
     var addWarn1 = '<div id="' + groupType
           + 'AddWarn1" class="warn"><i class="fa fa-exclamation-triangle"></i> Name cannot be blank.</div>';
     var addWarn2 = '<div id="' + groupType + 'AddWarn2" class="warn">'
@@ -886,6 +917,8 @@
           .append($(addWarn1))
           .append($(addWarn2));
     newButtonContainer.append(newItemSave).append(newItemDel);
+    setManSize(groupType);
+    newManagerItem.hide().slideDown(200);
     newItemSave.click(function() {
       updateGroupName(groupKey, groupType);
       setManSize(groupType);
@@ -893,35 +926,29 @@
     newItemDel.click(function() {
       $('div#deleteList').text('');
       $(this).parent().parent().find('div.warn').css('display', 'none');
+      var deleteAlert = $('div#deleteAlert');
+      deleteAlert.attr({'data-infocus':groupKey, 'data-infocustype':groupType});
+      deleteAlert.find('span.catName').text(groupData[groupKey]['name']);
       if (groupData[groupKey]['list'].length == 0) {
-        var deleteAlert = $('div#deleteAlert');
-        deleteAlert.attr({'data-infocus':groupKey, 'data-infocustype':groupType});
-        deleteAlert.find('span.catName').text(groupData[groupKey]['name']);
         deleteAlert.find('div#deleteMsgErr').hide()
               .parent().find('div#deleteMsgConf').show()
               .parent().find('button.close').hide()
               .parent().find('button.yes').show()
               .parent().find('button.no').show();
-        addElementLast('deleteAlert', zStack);
-        deleteAlert.fadeIn(300);
-        shuffleZ();
       } else {
         for (var i = 0; i < groupData[groupKey]['list'].length; i++) {
           createElementDIV($('div#deleteList'), groupData[groupKey]['list'][i], type);
         }
-        var deleteAlert = $('div#deleteAlert');
-        deleteAlert.attr({'data-infocus':groupKey, 'data-infocustype':groupType});
-        deleteAlert.find('span.catName').text(groupData[groupKey]['name']);
         deleteAlert.find('div#deleteMsgErr').show()
               .parent().find('div#deleteMsgConf').hide()
               .parent().find('button.close').show()
               .parent().find('button.yes').hide()
               .parent().find('button.no').hide();
-        addElementLast('deleteAlert', zStack);
-        deleteAlert.fadeIn(300);
-        shuffleZ();
-        setDeleteAlertSize();
       }
+      addElementLast('deleteAlert', zStack);
+      deleteAlert.fadeIn(300);
+      shuffleZ();
+      setDeleteAlertSize();
     });
   }
  
@@ -993,7 +1020,7 @@
     unfreeze();
   }
   
-  // Briefly reveal save confirmation div
+  // Briefly reveal save confirmation
   function showSuccess() {
     $('div#success').fadeIn(200, function() {
       setTimeout(function() {$('div#success').fadeOut(200)}, 2000);
@@ -1130,6 +1157,12 @@
       removeElement('uploadDB', zStack);
       unfreeze(startBlankDB);
     });
+    $('button#closeUpload').click(function () {
+      $(this).parent().find('div.warn').css('display', 'none');
+      $(this).parent().fadeOut(300);
+      removeElement('uploadDB', zStack);
+      unfreeze();
+    });
     
     // Define behavior of viewport freezer
     $('div#freezeViewport').click(function() {
@@ -1151,7 +1184,9 @@
         var groupData = colData;
       }
       delete groupData[groupKey];
-      $('div#' + groupType + 'List').find('div[data-key="' + groupKey + '"]').detach();
+      $('div#' + groupType + 'List').find('div[data-key="' + groupKey + '"]').slideUp(200, function() {
+        $(this).detach();
+      });
       $('option[value="' + groupKey + '"]').detach();
       $('div#deleteAlert').fadeOut(300);
       removeElement('deleteAlert', zStack);
@@ -1207,7 +1242,15 @@
       removeElement('downloadConf', zStack);
       unfreeze();
     });
+    $('button#closeDownload').click(function() {
+      $('div#downloadConf').fadeOut(300);
+      removeElement('downloadConf', zStack);
+      unfreeze();
+    });
     $('button#preview').click(preview);
+    $('button#help').click(function() {
+      window.open('https://youtu.be/c0g70_fBJ5w', '_blank');
+    });
     $('div#menuToggle').click(toggleMenu);
     
     // Define expand/collapse handlers for main display lists
@@ -1248,7 +1291,7 @@
     $('div#deleteList').css('max-height', '');
     $('div#deleteList').css('max-height', $('div#deleteAlert').innerHeight()
             - ($('div#deleteMsgErr').outerHeight() + $('div#deleteMsgConf').outerHeight()
-            + $('button#closeDelAlert').outerHeight() + 48));
+            + $('button#closeDelAlert').outerHeight()));
   }
 
   // Set max-height of editor popup viewport

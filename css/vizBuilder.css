@@ -161,6 +161,10 @@ textarea {
   overflow: hidden;
 }
 
+#bgList .edInp {
+  direction: rtl;
+}
+
 .edInp input, .edInp select, .edInp button {
   width: 100%;
 }

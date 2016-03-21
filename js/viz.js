@@ -857,15 +857,23 @@ function buildVIZ(allData) {
   // Transition out of loading splash page
   function loadingTrans() {
     $('div#loading').fadeOut(400, function() {
-      var cont = $('button#continue');
-      cont.focus();
-      tabFocusRestrictor(cont, cont);
-      setTimeout(function() {
-        var welcome = $('div#welcome');
-        if (welcome.css('display') !== 'none') {
-          welcomeTrans();
-        }
-      }, 10000);
+      if (metaData['welcome'].length > 0) {
+        var cont = $('button#continue');
+        cont.focus();
+        tabFocusRestrictor(cont, cont);
+        // setTimeout(function() {
+          // var welcome = $('div#welcome');
+          // if (welcome.css('display') !== 'none') {
+            // welcomeTrans();
+          // }
+        // }, 10000);
+      } else {
+        $('div#splashAlert').fadeIn(300, function() {
+          var iunderstand = $('button#iunderstand');
+          iunderstand.focus();
+          tabFocusRestrictor(iunderstand, iunderstand);
+        });
+      }
     });
   }
   
@@ -883,21 +891,14 @@ function buildVIZ(allData) {
   // Build and pre-load backgrounds
   function buildBG() {
     if (metaData['bg'].length > 0) {
+      customCSS = $('style#customCSS');
       for (var i = 0; i < metaData['bg'].length; i++) {
         var newBG = $('<div id="bg' + i + '" data-idx="' + i + '" class="bgslide"></div>');
-        newBG.css('background-image', 'url(' + metaData['bg'][i] + ')');
+        customCSS.text(customCSS.text() + ' #bg' + i + "{background-image: url('" + metaData['bg'][i] + "')}");
         $('div#bgContainer').append(newBG);
-        if (i === metaData['bg'].length - 1) {
-          $.get(metaData['bg'][i], function() {
-            setTimeout(loadingTrans, 1500);
-          });
-        } else {
-          $.get(metaData['bg'][i]);
-        }
       }
-    } else {
-      setTimeout(loadingTrans, 1500);
     }
+    setTimeout(loadingTrans, 1500);
   }
   
   //Pick random starting background
@@ -971,7 +972,11 @@ function buildVIZ(allData) {
   });
   
   // Insert welcome
-  $('div#welcomeCustom').html(metaData['welcome']);
+  if (metaData['welcome'].length > 0) {
+    $('div#welcomeCustom').html(metaData['welcome']);
+  } else {
+    $('div#welcome').hide();
+  }
   
   // Set favicon
   $('link#favicon').attr('href', metaData['favicon']);

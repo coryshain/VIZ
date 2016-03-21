@@ -56,7 +56,8 @@
   <div id="downloadConf" class="popUp">
     This will download a copy of "vizDB.txt" containing all of your current changes. To save these changes 
     to your website, upload "vizDB.txt" to the /data/ folder of the VIZ directory on your web server.<br>
-    <button id="downloadYes">Download</button>
+    <button id="downloadYes" title="Download">Download</button> 
+    <button id="closeDownload" class="close" title="Cancel"><i class="fa fa-times"></i> Cancel</button>
   </div>
   
   <!-- Upload dialog -->
@@ -67,16 +68,17 @@
     <div id="uploadWarn2" class="warn"><i class="fa fa-exclamation-triangle"></i> The selected file is not valid JSON.</div>
     <div id="uploadWarn3" class="warn"><i class="fa fa-exclamation-triangle"></i> The selected file is not a valid VIZ database.</div>
     <div id="uploadWarn4" class="warn"><i class="fa fa-exclamation-triangle"></i> <span class="errMsg">The selected file is not a valid VIZ database.</span></div>
-    <button id="confirmUpload"><i class="fa fa-upload"></i> Upload</button>
-    <button id="import"><i class="fa fa-files-o"></i> Import From Server</button>
-    <button id="startBlank"><i class="fa fa-file-o"></i> Start Blank Database</button>
+    <button id="confirmUpload" title="Upload a VIZ database file"><i class="fa fa-upload"></i> Upload</button>
+    <button id="import" title="Import the VIZ database in the data folder of your VIZ directory on your website"><i class="fa fa-files-o"></i> Import From Server</button>
+    <button id="startBlank" title="Start a blank database"><i class="fa fa-file-o"></i> Start Blank Database</button>
+    <button id="closeUpload" class="close" title="Cancel"><i class="fa fa-times"></i> Cancel</button>
   </div>
   
   <!-- Validation successful -->
   <div id="allGood" class="popUp">
     <i class="fa fa-check" style="color: #00FF00"></i> Validation successful!<br>
     No problems with the database detected.<br>
-    <button id="closeValid" class="close"><i class="fa fa-times"></i> Close</button>
+    <button id="closeValid" class="close" title="Close"><i class="fa fa-times"></i> Close</button>
   </div>
 
   <!-- Delete category alert (appears if category still has elements assigned) -->
@@ -85,66 +87,71 @@
     <h3 id="dupOld"></h3>
     <div id="dupRenamer">
       <label for="dupRename">New Name (must be unique):</label>
-      <button id="dupNameUpdate" class="edSave save"><i class="fa fa-files-o"></i> Create Duplicate</button>
+      <button id="dupNameUpdate" class="edSave save" title="Create duplicate"><i class="fa fa-files-o"></i> Create Duplicate</button>
       <span class="edInp"><input type="text" id="dupRename" class="nameInp"></span>
       <div id="dupNameWarn1" class="name1 warn"><i class="fa fa-exclamation-triangle"></i> Name cannot be blank.</div>
       <div id="dupNameWarn2" class="name2 warn"><i class="fa fa-exclamation-triangle"></i> That name already exists.</div>
     </div>
-    <button id="closeDup" class="close"><i class="fa fa-times"></i> Close</button>
+    <button id="closeDup" class="close" title="Cancel"><i class="fa fa-times"></i> Cancel</button>
   </div>
 
   <!-- Delete category alert (appears if category still has elements assigned) -->
   <div id="deleteAlert" class="popUp">
     <div id="deleteMsgErr"><span class="catName"></span> cannot be deleted since it has the following items assigned to it:</div>
-    <div id="deleteMsgConf">Are you sure you want to delete <span class="catName"></span>?</div>
+    <div id="deleteMsgConf">Are you sure you want to delete <span class="catName"></span>? This cannot be undone.</div>
     <div id="deleteList" class="list"></div>
-    <button id="closeDelAlert" class="close"><i class="fa fa-times"></i> Close</button>
-    <button id="yesDelAlert" class="yes"><i class="fa fa-check"></i> Yes</button>
-    <button id="noDelAlert" class="no"><i class="fa fa-times"></i> No</button>
+    <button id="closeDelAlert" class="close"><i class="fa fa-times" title="Close"></i> Close</button>
+    <button id="yesDelAlert" class="yes"><i class="fa fa-check" title="Yes"></i> Yes</button>
+    <button id="noDelAlert" class="no"><i class="fa fa-times" title="No"></i> No</button>
   </div>
   
   <!-- Course category manager -->
   <div id="catManage" class="popUp">
     <div id="catCreateContainer">
-      <button id="catCreateConf" class="edSave save"><i class="fa fa-floppy-o"></i> Add</button>
+      <button id="catCreateConf" class="edSave save" title="Add category"><i class="fa fa-floppy-o"></i> Add</button>
       <span class="edInp"><input type="text" id="catCreate"></span>
       <div id="catAddWarn1" class="warn"><i class="fa fa-exclamation-triangle"></i> Name cannot be blank.</div>
       <div id="catAddWarn2" class="warn"><i class="fa fa-exclamation-triangle"></i> Category with that name already exists.</div>
     </div>
     <div id="catList" class="list">
     </div>
-    <button id="catManClose" class="close"><i class="fa fa-times"></i> Close</button>
+    <button id="catManClose" class="close" title="Close"><i class="fa fa-times"></i> Close</button>
   </div>
   
   <!-- Program school/college manager -->
   <div id="colManage" class="popUp">
     <div id="colCreateContainer">
-      <button id="colCreateConf" class="edSave save"><i class="fa fa-floppy-o"></i> Add</button>
+      <button id="colCreateConf" class="edSave save" title="Add college"><i class="fa fa-floppy-o"></i> Add</button>
       <span class="edInp"><input type="text" id="colCreate"></span>
       <div id="colAddWarn1" class="warn"><i class="fa fa-exclamation-triangle"></i> Name cannot be blank.</div>
       <div id="colAddWarn2" class="warn"><i class="fa fa-exclamation-triangle"></i> College/School with that name already exists.</div>
     </div>
     <div id="colList" class="list">
     </div>
-    <button id="colManClose" class="close"><i class="fa fa-times"></i> Close</button>
+    <button id="colManClose" class="close" title="Close"><i class="fa fa-times"></i> Close</button>
   </div>
   
   <!-- Program school/college manager -->
   <div id="bgManage" class="popUp">
     <div id="bgCreateContainer">
-      <span id="bgManText" class="block"> Enter the URL of the background image you want to add. Images must be hosted in the same domain as VIZ.</span>
-      <button id="bgCreateConf" class="edSave save"><i class="fa fa-floppy-o"></i> Add</button>
+      <span id="bgManText" class="block"> Enter the URL of the background image you want to add.</span>
+      <button id="bgCreateConf" class="edSave save" title="Add background"><i class="fa fa-floppy-o"></i> Add</button>
       <span class="edInp"><input type="text" id="bgCreate"></span>
       <div id="bgAddWarn1" class="warn"><i class="fa fa-exclamation-triangle"></i> URL cannot be blank.</div>
       <div id="bgAddWarn2" class="warn"><i class="fa fa-exclamation-triangle"></i> You have already added this URL.</div>
     </div>
     <div id="bgList" class="list">
     </div>
-    <button id="bgManClose" class="close"><i class="fa fa-times"></i> Close</button>
+    <button id="bgManClose" class="close"><i class="fa fa-times" title="Close"></i> Close</button>
   </div>
   
   <!-- Item delete confirmation dialog -->
-  <div id="areUSure" class="popUp"><i class="fa fa-exclamation-triangle"></i> Are you sure you want to delete the <span id="toDeleteType"></span> <span id="toDelete"></span>? All approval links will be lost. This cannot be undone.<br><button id="yesSure" class="save">Delete</button> <button id="noSure">Cancel</button></div>
+  <div id="areUSure" class="popUp">
+    <i class="fa fa-exclamation-triangle"></i>
+    Are you sure you want to delete the <span id="toDeleteType"></span> <span id="toDelete"></span>? All approval links will be lost. This cannot be undone.<br>
+    <button id="yesSure" class="save" title="Delete">Delete</button>
+    <button id="noSure" title="Cancel">Cancel</button>
+  </div>
 
   <!-- Bulk link confirmation dialog -->
   <div id="linkConf" class="popUp"><i class="fa fa-exclamation-triangle"></i> Are you sure you want to <span id="linkAction"></span> approval links between <span id="linkTarget"></span> and all visible <span id="linkOppType"></span>? This cannot be undone.<br><button id="linkYes" class="save">Confirm</button> <button id="linkNo">Cancel</button></div>
@@ -155,17 +162,17 @@
     <div id="courseEdContainer" class="edContainer">
       <div class="editHeaders">
         <label for="courseNameEd">Name: </label>
-        <button id="courseNameSave" class="nameSave edSave save"><i class="fa fa-floppy-o"></i> Update</button>
+        <button id="courseNameSave" class="nameSave edSave save" title="Update name"><i class="fa fa-floppy-o"></i> Update</button>
         <span class="edInp"><input type="text" id="courseNameEd" class="nameInp"></input></span>
         <div id="courseNameWarn1Ed" class="warn name1"><i class="fa fa-exclamation-triangle"></i> Name cannot be blank.</div>
         <div id="courseNameWarn2Ed" class="warn name2"><i class="fa fa-exclamation-triangle"></i> Course with that name already exists.</div>
         <label for="courseCatEd">Course Category: </label>
-        <button id="courseCatSave" class="catSave edSave save"><i class="fa fa-floppy-o"></i> Update</button>
+        <button id="courseCatSave" class="catSave edSave save" title="Update category"><i class="fa fa-floppy-o"></i> Update</button>
         <span class="edInp"><select type="text" id="courseCatEd" class="catInp courseCatInp"></select></span>
         <div id="courseCatWarnEd" class="warn cat"><i class="fa fa-exclamation-triangle"></i> Course Category cannot be blank.</div>
-        <button class="u-full-width" data-type="cat"><i class="fa fa-wrench"></i> Manage Categories</button>
+        <button class="u-full-width" data-type="cat" title="Manage categories"><i class="fa fa-wrench"></i> Manage Categories</button>
         <label for="courseSiteEd">Website: </label>
-        <button id="courseSiteSave" class="siteSave edSave save"><i class="fa fa-floppy-o"></i> Update</button>
+        <button id="courseSiteSave" class="siteSave edSave save" title="Update website URL"><i class="fa fa-floppy-o"></i> Update</button>
         <span class="edInp"><input type="text" id="courseSiteEd" class="siteInp"></input></span>
         <div class="edCatList">
         </div>
@@ -175,16 +182,16 @@
           <span>Programs that accept </span>
           <span id="courseEdLabel"></span>
         </h4>
-        <label for="progCatEdFilter" class="filterLabel"><i class="fa fa-filter"></i><span> Filter: </span></label>
+        <label for="progCatEdFilter" class="filterLabel"><i class="fa fa-filter" title="Filter programs by college/school">></i><span> Filter: </span></label>
         <span class="edInp"><select type="text" id="progCatEdFilter" class="catInp progCatInp"></select></span>
         <div class="prog bulkLink">
-          <button id="courseLinkAll"><i class="fa fa-chain link"></i> Link All</button>
-          <button id="courseDelinkAll"><i class="fa fa-unlink link"></i> Delink All</button>
+          <button id="courseLinkAll" title="Add approval links to all visible programs"><i class="fa fa-chain link"></i> Link All</button>
+          <button id="courseDelinkAll" title="Remove approval links from all visible programs"><i class="fa fa-unlink link"></i> Delink All</button>
         </div>
         <div id="courseEditorList" class="editorList"></div>
       </div>
     </div>
-    <button id="courseEditClose" type="button" class="close"><i class="fa fa-times"></i> Close</button>
+    <button id="courseEditClose" type="button" class="close" title="Close"><i class="fa fa-times"></i> Close</button>
   </div>
   
   <!-- Program editor -->
@@ -193,17 +200,17 @@
     <div id="progEdContainer" class="edContainer">
       <div class="editHeaders">
         <label for="progNameEd">Name: </label>
-        <button id="progNameSave" class="nameSave edSave save"><i class="fa fa-floppy-o"></i> Update</button>
+        <button id="progNameSave" class="nameSave edSave save" title="Update name"><i class="fa fa-floppy-o"></i> Update</button>
         <span class="edInp"><input type="text" id="progNameEd" class="nameInp"></input></span>
         <div id="progNameWarn1Ed" class="warn name1"><i class="fa fa-exclamation-triangle"></i> Name cannot be blank.</div>
         <div id="progNameWarn2Ed" class="warn name2"><i class="fa fa-exclamation-triangle"></i> Program with that name already exists.</div>
         <label for="progCatEd">College/School: </label>
-        <button id="progCatSave" class="catSave edSave save"><i class="fa fa-floppy-o"></i> Update</button>
+        <button id="progCatSave" class="catSave edSave save" title="Update college/school"><i class="fa fa-floppy-o"></i> Update</button>
         <span class="edInp"><select type="text" id="progCatEd" class="catInp progCatInp"></select></span>
         <div id="progCatWarnEd" class="warn cat"><i class="fa fa-exclamation-triangle"></i> College/school cannot be blank.</div>
-        <button class="u-full-width" data-type="col"><i class="fa fa-wrench"></i> Manage Colleges/Schools</button>
+        <button class="u-full-width" data-type="col" title="Manage colleges/schools"><i class="fa fa-wrench"></i> Manage Colleges/Schools</button>
         <label for="progSiteEd">Website: </label>
-        <button id="progSiteSave" class="siteSave edSave save"><i class="fa fa-floppy-o"></i> Update</button>
+        <button id="progSiteSave" class="siteSave edSave save" title="Update website URL"><i class="fa fa-floppy-o"></i> Update</button>
         <span class="edInp"><input type="text" id="progSiteEd" class="siteInp"></span>
       </div>
       <div class="editLinks">
@@ -211,16 +218,16 @@
           <span>Courses that are accepted by </span>
           <span id="progEdLabel"></span>
         </h4>
-        <label for="courseCatEdFilter" class="filterLabel"><i class="fa fa-filter"></i><span> Filter: </span></label>
+        <label for="courseCatEdFilter" class="filterLabel" title="Filter courses by category"><i class="fa fa-filter"></i><span> Filter: </span></label>
         <span class="edInp"><select type="text" id="courseCatEdFilter" class="catInp courseCatInp"></select></span>
         <div class="prog bulkLink">
-          <button id="progLinkAll"><i class="fa fa-chain link"></i> Link All</button>
-          <button id="progDelinkAll"><i class="fa fa-unlink link"></i> Delink All</button>
+          <button id="progLinkAll" title="Add approval links to all visible courses"><i class="fa fa-chain link"></i> Link All</button>
+          <button id="progDelinkAll" title="Remove approval links from all visible courses"><i class="fa fa-unlink link"></i> Delink All</button>
         </div>
         <div id="progEditorList" class="editorList"></div>
       </div>
     </div>
-    <button id="progEditClose" type="button" class="close"><i class="fa fa-times"></i> Close</button>
+    <button id="progEditClose" type="button" class="close" title="Close"><i class="fa fa-times"></i> Close</button>
   </div>
   
   
@@ -234,13 +241,14 @@
   <div id="topBar">
     <div id="topBarInner">
       <span style="font-size: 30px; vertical-align: middle;"><span style="letter-spacing: -4px;"><b>VI</b></span><b>Z</b><span style="font-size:small; color: #6CF; margin-left: -4px; padding: 2px;">BETA</span>Builder</span>
-      <button id="uploadNew"><i class="fa fa-file-o"></i> New</button>
-      <button id="view"><i class="fa fa-eye"></i> View Source</button>
-      <button id="validate"><i class="fa fa-check"></i> Validate</button>
-      <button id="download"><i class="fa fa-download"></i> Download</button>
-      <button id="preview"><i class="fa fa-laptop"></i> Preview</button>
+      <button id="uploadNew" title="Create or load another database"><i class="fa fa-file-o"></i> New</button>
+      <button id="view" title="View the database source (formatted JSON)"><i class="fa fa-eye"></i> View Source</button>
+      <button id="validate" title="Validate the contents of the database"><i class="fa fa-check"></i> Validate</button>
+      <button id="download" title="Download a copy of the current database"><i class="fa fa-download"></i> Download</button>
+      <button id="preview" title="Preview the database in VIZ"><i class="fa fa-laptop"></i> Preview</button>
+      <button id="help" title="Get help with VIZ Builder"><i class="fa fa-question-circle"></i> Help</button>
     </div>
-    <div id="menuToggle"><i class="fa fa-bars"></i></div>
+    <div id="menuToggle" title="Toggle menu"><i class="fa fa-bars"></i></div>
   </div>
   <!-- Menu spaces (resized/shown/hidden as needed to preserve content flow) -->
   <div id="topBarBuffer"></div>
@@ -262,10 +270,10 @@
         <label for="courseCat">Course Category: </label>
         <select type="text" id="courseCat" class="catInp courseCatInp u-full-width"></select><br>
         <div id="courseCatWarn" class="warn cat"><i class="fa fa-exclamation-triangle"></i> Course Category cannot be blank.</div>
-        <button class="u-full-width" data-type="cat"><i class="fa fa-wrench"></i> Manage Categories</button>
+        <button class="u-full-width" data-type="cat" title="Manage categories"><i class="fa fa-wrench"></i> Manage Categories</button>
         <label for="courseSite">Website: </label>
         <input type="text" id="courseSite" class="siteInp u-full-width"><br>
-        <button id="courseSave" type="button" class="u-full-width save"><i class="fa fa-floppy-o"></i> Add</button><br><br>
+        <button id="courseSave" type="button" class="u-full-width save" title="Add course"><i class="fa fa-floppy-o"></i> Add</button><br><br>
       </div>
       
       <!-- Program add pane -->
@@ -278,13 +286,13 @@
         <label for="progCat">College/School: </label>
         <select type="text" id="progCat" class="catInp progCatInp u-full-width"></select><br>
         <div id="progCatWarn" class="warn cat"><i class="fa fa-exclamation-triangle"></i> College/school cannot be blank.</div>
-        <button class="u-full-width" data-type="col"><i class="fa fa-wrench"></i> Manage Colleges/Schools</button>
+        <button class="u-full-width" data-type="col" title="Manage colleges/schools"><i class="fa fa-wrench"></i> Manage Colleges/Schools</button>
         <label for="progSite">Website: </label>
         <input type="text" id="progSite" class="siteInp u-full-width"><br>
-        <button id="progSave" type="button" class="u-full-width save"><i class="fa fa-floppy-o"></i> Add</button><br><br>
+        <button id="progSave" type="button" class="u-full-width save" title="Add program"><i class="fa fa-floppy-o"></i> Add</button><br><br>
       </div>
       
-      <button class="u-full-width" id="switch2props"><i class="fa fa-cogs"></i> Edit VIZ Properties</button>
+      <button class="u-full-width" id="switch2props" title="Edit VIZ properties"><i class="fa fa-cogs"></i> Edit VIZ Properties</button>
     
     </div>
         
@@ -320,11 +328,11 @@
           <textarea id="logoHTML" class="u-full-width htmlEntry"></textarea>
           <label for="welcomeHTML">Welcome Page HTML: </label>
           <textarea id="welcomeHTML" class="u-full-width htmlEntry"></textarea>
-          <button class="u-full-width" data-type="bg"><i class="fa fa-wrench"></i> Manage Background Images</button>
+          <button class="u-full-width" data-type="bg" title="Manage background images"><i class="fa fa-wrench"></i> Manage Background Images</button>
         </div>
       </div>
-      <button id="propSave" type="button" class="u-full-width save"><i class="fa fa-floppy-o"></i> Update</button><br><br>
-      <button class="u-full-width" id="switch2items"><i class="fa fa-list"></i> Add Courses and Programs</button>
+      <button id="propSave" type="button" class="u-full-width save" title="Update VIZ properties"><i class="fa fa-floppy-o"></i> Update</button><br><br>
+      <button class="u-full-width" id="switch2items" title="Add courses and programs"><i class="fa fa-list"></i> Add Courses and Programs</button>
 
     </div>
 
@@ -346,7 +354,7 @@
           </span>
         </h2>
         <div id="courseListContainer">
-          <label for="courseCatFilter" class="filterLabel"><i class="fa fa-filter"></i><span> Filter: </span></label>
+          <label for="courseCatFilter" class="filterLabel" title="Filter courses by category"><i class="fa fa-filter"></i><span> Filter: </span></label>
           <span class="edInp"><select type="text" id="courseCatFilter" class="catInp courseCatInp"></select></span>
           <div id="courseList"></div>
         </div>
@@ -365,7 +373,7 @@
           </span>
         </h2>
         <div id="progListContainer">
-          <label for="progCatFilter" class="filterLabel"><i class="fa fa-filter"></i><span> Filter: </span></label>
+          <label for="progCatFilter" class="filterLabel" title="Filter programs by college/school"><i class="fa fa-filter"></i><span> Filter: </span></label>
           <span class="edInp"><select type="text" id="progCatFilter" class="catInp progCatInp"></select></span>
           <div id="progList"></div>
         </div>
